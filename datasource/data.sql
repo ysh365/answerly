@@ -28,8 +28,8 @@ CREATE TABLE `sys_user` (
                             `mobile` varchar(100) DEFAULT NULL COMMENT '手机号',
                             `status` tinyint(4) DEFAULT NULL COMMENT '状态',
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-                            PRIMARY KEY (`id`) USING BTREE,
-) EENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
+                            PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
 
 
 DROP TABLE IF EXISTS `category`;
@@ -49,7 +49,7 @@ CREATE TABLE `question` (
                             `category` int(11) NOT NULL COMMENT '分类ID',
                             `title` varchar(32)  NOT NULL COMMENT '标题',
                             `content` varchar(1024)  NOT NULL COMMENT '内容',
-                            `id_user` bigint(20) DEFAULT NULL COMMENT '发布人ID',
+                            `user_id` bigint(20) DEFAULT NULL COMMENT '发布人ID',
                             `view_count` int(11) DEFAULT 0 COMMENT '浏览量',
                             `like_count` int(11) DEFAULT 0 COMMENT '点赞数',
                             `solved_flag` tinyint(1) DEFAULT 0 COMMENT '是否解决 0：未解决 1：已解决',
@@ -60,14 +60,13 @@ CREATE TABLE `question` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题';
 
 
-
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
                           `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                           `imgUrl` varchar(100) NOT NULL COMMENT '图片地址',
                           `id_user` bigint(20) DEFAULT NULL COMMENT '发布人ID',
                           `question_id` bigint(20) DEFAULT NULL COMMENT '问题ID',
-	                      `answer_id` bigint(20) DEFAULT NULL COMMENT '问题回复ID',
+                          `answer_id` bigint(20) DEFAULT NULL COMMENT '问题回复ID',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='照片墙';
 
@@ -75,18 +74,13 @@ CREATE TABLE `images` (
 DROP TABLE IF EXISTS `answer`;
 CREATE TABLE `answer` (
                           `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                          `id_category` bigint(20) DEFAULT NULL COMMENT '主题ID',
-                          `id_user` bigint(20) DEFAULT NULL COMMENT '发布人ID',
-                          `id_question` bigint(20) DEFAULT NULL COMMENT '问题ID',
-                          `content` varchar(1024) DEFAULT NOT NULL COMMENT '内容',
+                          `category_id` bigint(20) DEFAULT NULL COMMENT '主题ID',
+                          `user_id` bigint(20) DEFAULT NULL COMMENT '发布人ID',
+                          `question_id` bigint(20) DEFAULT NULL COMMENT '问题ID',
+                          `content` varchar(1024) NOT NULL COMMENT '内容',  -- 移除 DEFAULT
                           `like_count` int(11) DEFAULT 0 COMMENT '点赞数',
                           `created_date` datetime DEFAULT NULL COMMENT '创建时间',
-                          `useful` bit(1) NOT NULL COMMENT '是否有用',
-                          PRIMARY KEY (`id`),
+                          `useful` tinyint(1) NOT NULL COMMENT '是否有用',  -- 使用 TINYINT
+                          PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题回复';
-
-
-
-
-
 
