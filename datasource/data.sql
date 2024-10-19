@@ -4,7 +4,7 @@ CREATE DATABASE answerly  DEFAULT CHARACTER SET utf8mb4;
 USE `answerly`;
 
 DROP TABLE IF EXISTS `user`;
-CREATE TABLE `users` (
+CREATE TABLE `user` (
                          `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                          `student_id` varchar(20) NOT NULL COMMENT '学号',
                          `username` varchar(10) NOT NULL COMMENT '用户名',
@@ -77,10 +77,10 @@ CREATE TABLE `answer` (
                           `category_id` bigint(20) DEFAULT NULL COMMENT '主题ID',
                           `user_id` bigint(20) DEFAULT NULL COMMENT '发布人ID',
                           `question_id` bigint(20) DEFAULT NULL COMMENT '问题ID',
-                          `content` varchar(1024) NOT NULL COMMENT '内容',  -- 移除 DEFAULT
+                          `content` varchar(1024) NOT NULL COMMENT '内容',
                           `like_count` int(11) DEFAULT 0 COMMENT '点赞数',
                           `created_date` datetime DEFAULT NULL COMMENT '创建时间',
-                          `useful` tinyint(1) NOT NULL COMMENT '是否有用',  -- 使用 TINYINT
+                          `useful` tinyint(1) NOT NULL COMMENT '是否有用',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题回复';
 
