@@ -29,7 +29,7 @@ CREATE TABLE `sys_user` (
                             `status` tinyint(4) DEFAULT NULL COMMENT '状态',
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                             PRIMARY KEY (`id`) USING BTREE,
-) EENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
 
 
 DROP TABLE IF EXISTS `category`;
