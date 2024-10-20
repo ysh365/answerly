@@ -6,6 +6,8 @@ package org.buaa.project.controller;
  */
 
 import lombok.RequiredArgsConstructor;
+import org.buaa.project.common.convention.result.Result;
+import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +24,8 @@ public class UserController {
      * 根据用户名查找用户信息
      */
     @GetMapping("/api/answerly/v1/user/{username}")
-    public UserRespDTO getUser(@PathVariable String username) {
-        return userService.getUserByUsername(username);
+    public Result<UserRespDTO> getUser(@PathVariable String username) {
+        return Results.success(userService.getUserByUsername(username));
     }
 
 
