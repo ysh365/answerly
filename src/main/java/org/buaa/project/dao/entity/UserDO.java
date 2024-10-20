@@ -32,6 +32,11 @@ public class UserDO {
     private String password;
 
     /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
      * 个人简介
      */
     private String introduction;
@@ -52,7 +57,17 @@ public class UserDO {
     private String userType;
 
     /**
+     * 状态
+     */
+    private int status;
+
+    /**
      * 创建时间
      */
     private Date createdDate;
+
+    /**
+     * 删除标识 0：未删除 1：已删除
+     */
+    private int delFlag;
 }

@@ -1,11 +1,11 @@
 package org.buaa.project.dto.resp;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-
-import java.util.Date;
+import org.buaa.project.serialize.PhoneDesensitizationSerializer;
 
 /**
- * 用户返回参数实体
+ * 用户返回参数响应
  */
 @Data
 public class UserRespDTO {
@@ -40,12 +40,9 @@ public class UserRespDTO {
     private Integer solvedCount;
 
     /**
-     * 用户类型
+     * 手机号
      */
-    private String userType;
+    @JsonSerialize(using = PhoneDesensitizationSerializer.class)
+    private String phone;
 
-    /**
-     * 创建时间
-     */
-    private Date createdDate;
 }

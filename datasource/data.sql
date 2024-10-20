@@ -9,11 +9,14 @@ CREATE TABLE `user` (
                          `student_id` varchar(20) NOT NULL COMMENT '学号',
                          `username` varchar(10) NOT NULL COMMENT '用户名',
                          `password` varchar(60) NOT NULL COMMENT '密码',
+                         `phone` varchar(100) DEFAULT NULL COMMENT '手机号',
                          `introduction` varchar(16) DEFAULT NULL COMMENT '个人简介',
                          `like_count` int(11) DEFAULT 0 COMMENT '点赞数',
                          `solved_count` int(11) DEFAULT 0 COMMENT '解决问题的数量',
                          `user_type` ENUM('student', 'volunteer') NOT NULL COMMENT '用户类型',
+                         `status` tinyint(4) DEFAULT NULL COMMENT '状态',
                          `created_date` datetime DEFAULT NULL COMMENT '创建时间',
+                         `del_flag`      tinyint(1) DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                          PRIMARY KEY (`id`),
                          UNIQUE KEY idx_unique_username (username) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生和义工';
@@ -24,10 +27,11 @@ CREATE TABLE `sys_user` (
                             `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                             `student_id` varchar(20) NOT NULL COMMENT '学号',
                             `username` varchar(50)  NOT NULL COMMENT '用户名',
-                            `password` varchar(100) DEFAULT NULL COMMENT '密码',
-                            `mobile` varchar(100) DEFAULT NULL COMMENT '手机号',
+                            `password` varchar(100) NOT NULL COMMENT '密码',
+                            `phone` varchar(100) NOT NULL COMMENT '手机号',
                             `status` tinyint(4) DEFAULT NULL COMMENT '状态',
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `del_flag`      tinyint(1) DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                             PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
 
@@ -35,7 +39,7 @@ CREATE TABLE `sys_user` (
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
                             `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                            `category_name` varchar(255) DEFAULT NULL COMMENT '分类名称',
+                            `category_name` varchar(255) NOT NULL COMMENT '分类名称',
                             `pic_url` varchar(255)  DEFAULT NULL COMMENT '图片',
                             `sort` int(11) DEFAULT NULL COMMENT '排序',
                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
