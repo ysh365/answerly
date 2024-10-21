@@ -67,8 +67,8 @@ CREATE TABLE `question` (
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
                           `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                          `imgUrl` varchar(100) NOT NULL COMMENT '图片地址',
-                          `id_user` bigint(20) DEFAULT NULL COMMENT '发布人ID',
+                          `img_url` varchar(100) NOT NULL COMMENT '图片地址',
+                          `user_id` bigint(20) DEFAULT NULL COMMENT '发布人ID',
                           `question_id` bigint(20) DEFAULT NULL COMMENT '问题ID',
                           `answer_id` bigint(20) DEFAULT NULL COMMENT '问题回复ID',
                           PRIMARY KEY (`id`)

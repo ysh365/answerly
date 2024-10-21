@@ -14,6 +14,7 @@ import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,14 +36,17 @@ public class UserController {
      */
     @GetMapping("/api/answerly/v1/actual/user/{username}")
     public Result<UserActualRespDTO> getActualUserByUsername(@PathVariable("username") String username) {
-        System.out.println("here");
         return Results.success(BeanUtil.toBean(userService.getUserByUsername(username), UserActualRespDTO.class));
     }
 
+    /**
+     * 查询用户名是否存在
+     */
+    @GetMapping("/api/answerly/v1/user/has-username")
+    public Result<Boolean> hasUsername(@RequestParam("username") String username) {
+        return Results.success(userService.hasUsername(username));
+    }
 
-
-
-
-
+    
 
 }
