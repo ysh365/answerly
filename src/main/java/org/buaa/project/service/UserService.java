@@ -24,4 +24,10 @@ public interface UserService extends IService<UserDO> {
      * @return
      */
     Boolean hasUsername(String username);
+
+
+    /**
+     * 发送验证码
+     */
+    Boolean sendCode(String email);
 }

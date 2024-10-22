@@ -14,12 +14,14 @@ import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+
 
     private final UserService userService;
 
@@ -47,6 +49,17 @@ public class UserController {
         return Results.success(userService.hasUsername(username));
     }
 
-    
+
+    /**
+     * 发送验证码
+     */
+    @PostMapping("/api/answerly/v1/user/send-code")
+    public Result<Boolean> sendCode(@RequestParam("email") String email) {
+        return Results.success(userService.sendCode(email));
+    }
+
+
+
 
 }
+
