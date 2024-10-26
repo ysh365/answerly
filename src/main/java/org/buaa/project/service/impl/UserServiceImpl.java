@@ -1,16 +1,17 @@
 package org.buaa.project.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import lombok.RequiredArgsConstructor;
-
 import org.buaa.project.common.consts.MailSendConst;
+import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.common.enums.UserErrorCodeEnum;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.UserMapper;
+import org.buaa.project.dto.req.UserRegisterReqDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.buaa.project.toolkit.RandomGenerator;
@@ -67,6 +68,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         } catch (Exception e) {
             throw new ServiceException("邮件发送失败");
         }
+    }
+
+    @Override
+    public void register(UserRegisterReqDTO requestParam) {
+        UserDO userDO = new UserDO();
+        BeanUtils.copyProperties(requestParam, userDO);
+        int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+        if (inserted < 1) {
+            throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+        }
+        baseMapper.insert(userDO);
     }
 
 

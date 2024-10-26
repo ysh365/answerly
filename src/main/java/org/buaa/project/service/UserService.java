@@ -2,6 +2,7 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dto.req.UserRegisterReqDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 
 /**
@@ -30,4 +31,15 @@ public interface UserService extends IService<UserDO> {
      * 发送验证码
      */
     Boolean sendCode(String email);
+
+
+    /**
+     * 注册用户
+     *
+     * @param requestParam 注册用户请求参数
+     */
+    void register(UserRegisterReqDTO requestParam);
+
+
+
 }
