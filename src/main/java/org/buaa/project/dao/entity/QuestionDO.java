@@ -19,6 +19,7 @@ public class QuestionDO {
 //    0:未解决,1：已解决
 //
     private int solvedFlag;
+    private int delFlag;
     private Date createdDate;
 
 }

@@ -3,10 +3,9 @@ package org.buaa.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.service.QuestionService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
+
     @PostMapping("/api/answerly/v1/uplode-question")
     public Result<Boolean> uploadQuestion(
             @RequestParam("category") Integer category,
@@ -22,8 +22,20 @@ public class QuestionController {
             @RequestParam("id_user") Integer idUser,
             @RequestParam(value = "pictures", required = false) List<String> pictures // 图片可以是可选的
     ) {
-        Boolean isUploaded = questionService.uploadQuestion(category, content, title, idUser, pictures);
+        QuestionUploadReqDTO params = new QuestionUploadReqDTO(category, content, idUser, pictures, title);
+        Boolean isUploaded = questionService.uploadQuestion(params);
         return Results.success(isUploaded);
+    }
+
+    @DeleteMapping("/api/answerly/v1/delete/{question_id}")
+    public Result<Boolean> deleteQuestion(@PathVariable("question_id") Integer questionId) {
+        Boolean isDeleted = questionService.deleteQuestion(questionId);
+        return Results.success(isDeleted);
+    }
+    @PostMapping("/api/answerly/v1/like-question")
+    public Result<Boolean> likeQuestion(@RequestParam("question_id")  Integer questionId){
+        Boolean isLiked = questionService.likeQuestion(questionId);
+        return Results.success(isLiked);
     }
 }
 
