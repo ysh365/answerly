@@ -47,6 +47,7 @@ import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NAME_NULL;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_PASSWORD_ERROR;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_REPEATED_LOGIN;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_SAVE_ERROR;
+import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 
 /**
  * 用户接口实现层
@@ -166,6 +167,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             return false;
         }
         return hasLoginMap.containsKey(token);
+    }
+
+    @Override
+    public void logout(String username, String token) {
+        if (checkLogin(username, token)) {
+            stringRedisTemplate.delete(USER_LOGIN_KEY + username);
+            return;
+        }
+        throw new ClientException(USER_TOKEN_NULL);
     }
 
 }
