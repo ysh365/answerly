@@ -159,5 +159,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         return new UserLoginRespDTO(uuid);
     }
 
+    @Override
+    public Boolean checkLogin(String username, String token) {
+        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries(USER_LOGIN_KEY + username);
+        if (CollUtil.isEmpty(hasLoginMap)) {
+            return false;
+        }
+        return hasLoginMap.containsKey(token);
+    }
 
 }
