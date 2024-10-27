@@ -62,6 +62,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         int result = baseMapper.updateById(question);
         return result > 0;
     }
+
+    /**
+     * 点赞题目
+     * @param id
+     * @return
+     */
     @Transactional
     @Override
     public Boolean likeQuestion(int id){
@@ -74,4 +80,5 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         int result = baseMapper.updateById(question);
         return result > 0;
     }
+
 }
