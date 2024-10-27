@@ -33,12 +33,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         question.setCategory(params.getCategory());
         question.setContent(params.getContent());
         question.setTitle(params.getTitle());
-        question.setUserId(params.getIdUser());
-        question.setViewCount(0);  // 浏览次数初始化为0
-        question.setLikeCount(0);  // 点赞次数初始化为0
-        question.setSolvedFlag(0);  // 问题解决标志初始化为0
-        question.setDelFlag(0);
-        question.setCreatedDate(new Date());  // 创建时间为当前时间
+        question.setUserId(params.getUserId());
         boolean isSavedQuestion = this.save(question);
         if (params.getPictures() != null && !params.getPictures().isEmpty()) {
             //todo 进行图片处理
@@ -53,7 +48,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
      */
     @Transactional
     @Override
-    public Boolean deleteQuestion(int id){
+    public Boolean deleteQuestion(Long id){
 //        int res = baseMapper.deleteById(id);
 //        return res > 0;
         QuestionDO question = new QuestionDO();
@@ -70,7 +65,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
      */
     @Transactional
     @Override
-    public Boolean likeQuestion(int id){
+    public Boolean likeQuestion(Long id){
         QuestionDO question = baseMapper.selectById(id);
         if (question == null) {
             throw new ServiceException("问题不存在");

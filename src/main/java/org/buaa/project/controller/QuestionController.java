@@ -16,24 +16,19 @@ public class QuestionController {
 
     @PostMapping("/api/answerly/v1/uplode-question")
     public Result<Boolean> uploadQuestion(
-            @RequestParam("category") Integer category,
-            @RequestParam("content") String content,
-            @RequestParam("title") String title,
-            @RequestParam("id_user") Integer idUser,
-            @RequestParam(value = "pictures", required = false) List<String> pictures // 图片可以是可选的
+            @RequestBody QuestionUploadReqDTO questionUploadReqDTO
     ) {
-        QuestionUploadReqDTO params = new QuestionUploadReqDTO(category, content, idUser, pictures, title);
-        Boolean isUploaded = questionService.uploadQuestion(params);
+        Boolean isUploaded = questionService.uploadQuestion(questionUploadReqDTO);
         return Results.success(isUploaded);
     }
 
     @DeleteMapping("/api/answerly/v1/delete/{question_id}")
-    public Result<Boolean> deleteQuestion(@PathVariable("question_id") Integer questionId) {
+    public Result<Boolean> deleteQuestion(@PathVariable("question_id") Long questionId) {
         Boolean isDeleted = questionService.deleteQuestion(questionId);
         return Results.success(isDeleted);
     }
     @PostMapping("/api/answerly/v1/like-question")
-    public Result<Boolean> likeQuestion(@RequestParam("question_id")  Integer questionId){
+    public Result<Boolean> likeQuestion(@RequestParam("question_id")  Long questionId){
         Boolean isLiked = questionService.likeQuestion(questionId);
         return Results.success(isLiked);
     }
