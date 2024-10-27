@@ -20,4 +20,9 @@ public class RedisCacheConstant {
      */
     public static final long USER_REGISTER_CODE_EXPIRE = 5L;
 
+    /**
+     * 用户登录缓存标识
+     */
+    public static final String USER_LOGIN_KEY = "user:login:";
+
 }

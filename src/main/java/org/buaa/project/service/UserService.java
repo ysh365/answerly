@@ -2,7 +2,9 @@ package org.buaa.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.UserDO;
+import org.buaa.project.dto.req.UserLoginReqDTO;
 import org.buaa.project.dto.req.UserRegisterReqDTO;
+import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 
 /**
@@ -40,6 +42,13 @@ public interface UserService extends IService<UserDO> {
      */
     void register(UserRegisterReqDTO requestParam);
 
+    /**
+     * 用户登录
+     *
+     * @param requestParam 用户登录请求参数
+     * @return 用户登录返回参数 Token
+     */
+    UserLoginRespDTO login(UserLoginReqDTO requestParam);
 
 
 }

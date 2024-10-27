@@ -9,8 +9,10 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.UserLoginReqDTO;
 import org.buaa.project.dto.req.UserRegisterReqDTO;
 import org.buaa.project.dto.resp.UserActualRespDTO;
+import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,6 +69,15 @@ public class UserController {
         userService.register(requestParam);
         return Results.success();
     }
+
+    /**
+     * 用户登录
+     */
+    @PostMapping("/api/answerly/v1/user/login")
+    public Result<UserLoginRespDTO> login(@RequestBody UserLoginReqDTO requestParam) {
+        return Results.success(userService.login(requestParam));
+    }
+
 
 
 }
