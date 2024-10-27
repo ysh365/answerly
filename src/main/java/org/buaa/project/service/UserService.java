@@ -30,7 +30,7 @@ public interface UserService extends IService<UserDO> {
     /**
      * 发送验证码
      */
-    Boolean sendCode(String email);
+    Boolean sendCode(String mail);
 
 
     /**

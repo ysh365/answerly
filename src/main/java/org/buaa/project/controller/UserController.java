@@ -9,12 +9,14 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.UserRegisterReqDTO;
 import org.buaa.project.dto.resp.UserActualRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,16 +51,22 @@ public class UserController {
         return Results.success(userService.hasUsername(username));
     }
 
-
     /**
      * 发送验证码
      */
     @PostMapping("/api/answerly/v1/user/send-code")
-    public Result<Boolean> sendCode(@RequestParam("email") String email) {
-        return Results.success(userService.sendCode(email));
+    public Result<Boolean> sendCode(@RequestParam("mail") String mail) {
+        return Results.success(userService.sendCode(mail));
     }
 
-
+    /**
+     * 注册用户
+     */
+    @PostMapping("/api/answerly/v1/user")
+    public Result<Void> register(@RequestBody UserRegisterReqDTO requestParam) {
+        userService.register(requestParam);
+        return Results.success();
+    }
 
 
 }

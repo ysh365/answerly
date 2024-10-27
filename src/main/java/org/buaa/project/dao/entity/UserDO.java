@@ -31,7 +31,7 @@ public class UserDO {
     /**
      * 邮箱
      */
-    private String email;
+    private String mail;
 
     /**
      * 手机号

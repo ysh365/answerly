@@ -13,6 +13,11 @@ spring:
       idle-timeout: 300000
       maximum-pool-size: 5
       minimum-idle: 5
+  data:
+    redis:
+      host: 192.168.234.140
+      port: 6379
+      password: wwx123
 
   mail:
     protocol: smtps
