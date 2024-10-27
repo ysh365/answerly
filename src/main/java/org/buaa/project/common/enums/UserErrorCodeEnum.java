@@ -25,11 +25,21 @@ import org.buaa.project.common.convention.errorcode.IErrorCode;
  */
 public enum UserErrorCodeEnum implements IErrorCode {
 
-    USER_NULL("B000200", "用户记录不存在"),
+    USER_NAME_EXIST("A000101", "用户名已存在"),
 
-    USER_NAME_EXIST("B000201", "用户名已存在"),
+    USER_EXIST("A000102", "用户记录已存在"),
 
-    USER_SAVE_ERROR("B000203", "用户记录新增失败");
+    USER_SAVE_ERROR("A000103", "用户记录新增失败"),
+
+    USER_CODE_ERROR("A000104", "验证码错误"),
+
+    USER_NAME_NULL("A000201", "用户名不存在"),
+
+    USER_PASSWORD_ERROR("A000202", "密码错误"),
+
+    USER_REPEATED_LOGIN("A000203", "重复登录"),
+
+    USER_NULL("A000301", "用户记录不存在");
 
     private final String code;
 

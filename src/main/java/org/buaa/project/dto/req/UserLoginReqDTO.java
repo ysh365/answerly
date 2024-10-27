@@ -3,10 +3,10 @@ package org.buaa.project.dto.req;
 import lombok.Data;
 
 /**
- * 用户注册请求参数
+ * 用户登录请求参数
  */
 @Data
-public class UserRegisterReqDTO {
+public class UserLoginReqDTO {
 
     /**
      * 用户名
@@ -17,14 +17,4 @@ public class UserRegisterReqDTO {
      * 密码
      */
     private String password;
-
-    /**
-     * 邮箱
-     */
-    private String mail;
-
-    /**
-     * 验证码
-     */
-    private String code;
 }
