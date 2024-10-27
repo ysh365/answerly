@@ -9,6 +9,6 @@ import java.util.List;
 public interface QuestionService extends IService<QuestionDO> {
     //上传题目
     Boolean uploadQuestion(QuestionUploadReqDTO params);
-    Boolean deleteQuestion(int id);
-    Boolean likeQuestion(int id);
+    Boolean deleteQuestion(Long id);
+    Boolean likeQuestion(Long id);
 }
