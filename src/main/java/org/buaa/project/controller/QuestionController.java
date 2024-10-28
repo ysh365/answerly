@@ -3,7 +3,9 @@ package org.buaa.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.QuestionFindReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
+import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +29,18 @@ public class QuestionController {
         Boolean isDeleted = questionService.deleteQuestion(questionId);
         return Results.success(isDeleted);
     }
+
     @PostMapping("/api/answerly/v1/like-question")
-    public Result<Boolean> likeQuestion(@RequestParam("question_id")  Long questionId){
+    public Result<Boolean> likeQuestion(@RequestParam("question_id") Long questionId) {
         Boolean isLiked = questionService.likeQuestion(questionId);
         return Results.success(isLiked);
+    }
+
+    @GetMapping("/api/answerly/v1/find-question")
+    public Result<List<QuestionRespDTO>> findQuestion(
+            @RequestBody QuestionFindReqDTO questionFindReqDTO
+    ) {
+        return Results.success(questionService.findQuestion(questionFindReqDTO));
     }
 }
 
