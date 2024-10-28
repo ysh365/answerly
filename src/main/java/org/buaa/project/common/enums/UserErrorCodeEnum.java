@@ -39,6 +39,8 @@ public enum UserErrorCodeEnum implements IErrorCode {
 
     USER_REPEATED_LOGIN("A000203", "重复登录"),
 
+    USER_TOKEN_NULL("A000204", "用户未登录"),
+
     USER_NULL("A000301", "用户记录不存在");
 
     private final String code;

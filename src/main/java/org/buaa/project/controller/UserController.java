@@ -15,6 +15,7 @@ import org.buaa.project.dto.resp.UserActualRespDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,6 +87,14 @@ public class UserController {
         return Results.success(userService.checkLogin(username, token));
     }
 
+    /**
+     * 用户退出登录
+     */
+    @DeleteMapping("/api/answerly/v1/user/logout")
+    public Result<Void> logout(@RequestParam("username") String username, @RequestParam("token") String token) {
+        userService.logout(username, token);
+        return Results.success();
+    }
 
 }
 
