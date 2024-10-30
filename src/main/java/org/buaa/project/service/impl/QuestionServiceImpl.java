@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.QuestionDO;
-import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.QuestionFindReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
@@ -39,12 +38,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     @Override
     public Boolean uploadQuestion(QuestionUploadReqDTO params) {
         //todo 验证category和idUser是否在category和user表中存在
-//        QuestionDO question = new QuestionDO();
-//        question.setCategory(params.getCategory());
-//        question.setContent(params.getContent());
-//        question.setTitle(params.getTitle());
-//        question.setUserId(params.getUserId());
-//        boolean isSavedQuestion = this.save(question);
         int inserted = baseMapper.insert(BeanUtil.toBean(params, QuestionDO.class));
         boolean isSavedQuestion = inserted > 0;
         if (params.getPictures() != null && !params.getPictures().isEmpty()) {
@@ -92,19 +85,25 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
 
     /**
      * 查找问题
+     *
      * @param params
      * @return
      */
     @Transactional
     @Override
     public List<QuestionRespDTO> findQuestion(QuestionFindReqDTO params) {
-        LambdaQueryWrapper<QuestionDO> wrapper = Wrappers.lambdaQuery(QuestionDO.class)
-                .eq(QuestionDO::getCategory, params.getCategory())
-                .eq(QuestionDO::getSolvedFlag, params.getSolvedFlag());
+        LambdaQueryWrapper<QuestionDO> wrapper;
+        if (params.getSolvedFlag() == 2) {
+            wrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                    .eq(QuestionDO::getCategory, params.getCategory());
+        } else {
+            wrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                    .eq(QuestionDO::getCategory, params.getCategory())
+                    .eq(QuestionDO::getSolvedFlag, params.getSolvedFlag());
+        }
         Page<QuestionDO> questionPage = new Page<>(params.getPage(), 10);
 
         Page<QuestionDO> resultPage = baseMapper.selectPage(questionPage, wrapper);
-        //return resultPage.getRecords();
         List<QuestionRespDTO> responseList = resultPage.getRecords().stream()
                 .map(questionDO -> {
                     QuestionRespDTO dto = new QuestionRespDTO();
@@ -114,6 +113,32 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
                 .collect(Collectors.toList());
 
         return responseList;
+    }
+
+    /**
+     * 查找热门10道题
+     *
+     * @param category
+     * @return
+     */
+    @Transactional
+    @Override
+    public List<QuestionRespDTO> findHotQuestion(int category) {
+        //todo 修改热度值计算，暂时先根据like_count和view_count排序
+        LambdaQueryWrapper<QuestionDO> wrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                .eq(QuestionDO::getCategory, category)
+                .orderByDesc(QuestionDO::getLikeCount)
+                .orderByDesc(QuestionDO::getViewCount)
+                .last("LIMIT 10");
+        List<QuestionDO> questionDOList = baseMapper.selectList(wrapper);
+
+        return questionDOList.stream()
+                .map(questionDO -> {
+                    QuestionRespDTO dto = new QuestionRespDTO();
+                    BeanUtils.copyProperties(questionDO, dto);
+                    return dto;
+                })
+                .toList();
     }
 
 }

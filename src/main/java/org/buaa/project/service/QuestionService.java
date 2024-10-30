@@ -17,4 +17,5 @@ public interface QuestionService extends IService<QuestionDO> {
     Boolean likeQuestion(Long id);
 
     List<QuestionRespDTO> findQuestion(QuestionFindReqDTO params);
+    List<QuestionRespDTO> findHotQuestion(int category);
 }

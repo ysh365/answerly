@@ -42,5 +42,10 @@ public class QuestionController {
     ) {
         return Results.success(questionService.findQuestion(questionFindReqDTO));
     }
+
+    @GetMapping("/api/answerly/v1/top-ten/{category}")
+    public Result<List<QuestionRespDTO>> findTopTenQuestion(@PathVariable("category") int category) {
+        return Results.success(questionService.findHotQuestion(category));
+    }
 }
 
