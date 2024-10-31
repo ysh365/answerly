@@ -5,9 +5,11 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.consts.MailSendConst;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.exception.ServiceException;
@@ -16,6 +18,7 @@ import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.UserMapper;
 import org.buaa.project.dto.req.UserLoginReqDTO;
 import org.buaa.project.dto.req.UserRegisterReqDTO;
+import org.buaa.project.dto.req.UserUpdateReqDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
@@ -35,6 +38,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConst.EMAIL_SUFFIX;
+import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_EXPIRE;
 import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_KEY;
 import static org.buaa.project.common.consts.RedisCacheConstant.USER_REGISTER_CODE_EXPIRE;
 import static org.buaa.project.common.consts.RedisCacheConstant.USER_REGISTER_CODE_KEY;
@@ -48,6 +52,7 @@ import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_PASSWORD_ERRO
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_REPEATED_LOGIN;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_SAVE_ERROR;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
+import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_UPDATE_ERROR;
 
 /**
  * 用户接口实现层
@@ -156,7 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         String uuid = UUID.randomUUID().toString();
         stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + requestParam.getUsername(), uuid, JSON.toJSONString(userDO));
-        stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(), 30L, TimeUnit.MINUTES);
+        stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(), USER_LOGIN_EXPIRE, TimeUnit.DAYS);
         return new UserLoginRespDTO(uuid);
     }
 
@@ -177,5 +182,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
         throw new ClientException(USER_TOKEN_NULL);
     }
+
+    @Override
+    public void update(UserUpdateReqDTO requestParam) {
+        if (!Objects.equals(requestParam.getOldUsername(), UserContext.getUsername())) {
+            throw new ClientException(USER_UPDATE_ERROR);
+        }
+        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
+            throw new ClientException(USER_NAME_EXIST);
+        }
+        UserDO userDO = new UserDO();
+        userDO.setUsername(requestParam.getNewUsername());
+        userDO.setIntroduction(requestParam.getIntroduction());
+        userDO.setPhone(requestParam.getPhone());
+        userDO.setPassword(requestParam.getPassword());
+        LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+            .eq(UserDO::getUsername, requestParam.getOldUsername());
+        baseMapper.update(userDO, updateWrapper);
+        /**
+         * 更新redis缓存
+         */
+        if (!requestParam.getOldUsername().equals(requestParam.getNewUsername())) {
+            Object userInfoJsonStr = stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + requestParam.getOldUsername(), UserContext.getToken());
+            if (userInfoJsonStr != null) {
+                stringRedisTemplate.delete(USER_LOGIN_KEY + requestParam.getOldUsername());
+                stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + requestParam.getNewUsername(), UserContext.getToken(), JSON.toJSONString(userInfoJsonStr));
+                stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getNewUsername(), USER_LOGIN_EXPIRE, TimeUnit.DAYS);
+            } else {
+                throw new ServiceException(USER_UPDATE_ERROR);
+            }
+        }
+    }
+
 
 }
