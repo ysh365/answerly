@@ -8,12 +8,12 @@ public class RedisCacheConstant {
     /**
      * 用户注册分布式锁
      */
-    public static final String USER_REGISTER_LOCK_KEY = "user:register:lock";
+    public static final String USER_REGISTER_LOCK_KEY = "user:register:lock:";
 
     /**
      * 用户注册验证码缓存
      */
-    public static final String USER_REGISTER_CODE_KEY = "user:register:code";
+    public static final String USER_REGISTER_CODE_KEY = "user:register:code:";
 
     /**
      * 用户注册验证码缓存过期时间
@@ -24,5 +24,10 @@ public class RedisCacheConstant {
      * 用户登录缓存标识
      */
     public static final String USER_LOGIN_KEY = "user:login:";
+
+    /**
+     * 用户登录缓存过期时间(天)
+     */
+    public static final long USER_LOGIN_EXPIRE = 30L;
 
 }
