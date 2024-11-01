@@ -1,6 +1,5 @@
 package org.buaa.project.common.biz.user;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import jakarta.servlet.Filter;
@@ -14,23 +13,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.convention.result.Results;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
 
-import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_KEY;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 
 /**
- * 用户信息传输过滤器
+ * 登录检验过滤器
  */
 @RequiredArgsConstructor
-public class UserTransmitFilter implements Filter {
-
-    private final StringRedisTemplate stringRedisTemplate;
+public class LoginCheckFilter implements Filter {
 
     private static final List<String> IGNORE_URI = Lists.newArrayList(
             "/api/answerly/v1/user/login",
@@ -46,32 +41,13 @@ public class UserTransmitFilter implements Filter {
         if (!IGNORE_URI.contains(requestURI)) {
             String method = httpServletRequest.getMethod();
             if (!(Objects.equals(requestURI, "/api/answerly/v1/user") && Objects.equals(method, "POST"))) {
-                String username = httpServletRequest.getHeader("username");
-                String token = httpServletRequest.getHeader("token");
-                if (!StrUtil.isAllNotBlank(username, token)) {
+                if(UserContext.getUsername() == null){
                     returnJson((HttpServletResponse) servletResponse, JSON.toJSONString(Results.failure(new ClientException(USER_TOKEN_NULL))));
-                    return;
                 }
-                Object userInfoJsonStr;
-                try {
-                    userInfoJsonStr = stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + username, token);
-                    if (userInfoJsonStr == null) {
-                        throw new ClientException(USER_TOKEN_NULL);
-                    }
-                } catch (Exception ex) {
-                    returnJson((HttpServletResponse) servletResponse, JSON.toJSONString(Results.failure(new ClientException(USER_TOKEN_NULL))));
-                    return;
-                }
-                UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
-                userInfoDTO.setToken(token);
-                UserContext.setUser(userInfoDTO);
             }
         }
-        try {
-            filterChain.doFilter(servletRequest, servletResponse);
-        } finally {
-            UserContext.removeUser();
-        }
+
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private void returnJson(HttpServletResponse response, String json) throws Exception {
@@ -88,5 +64,6 @@ public class UserTransmitFilter implements Filter {
                 writer.close();
         }
     }
+
 
 }
