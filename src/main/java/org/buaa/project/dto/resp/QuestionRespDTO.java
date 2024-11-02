@@ -1,11 +1,11 @@
-package org.buaa.project.dao.entity;
-import com.baomidou.mybatisplus.annotation.TableName;
+package org.buaa.project.dto.resp;
+
 import lombok.Data;
-import org.buaa.project.common.database.BaseDO;
+
+import java.util.Date;
 
 @Data
-@TableName("question")
-public class QuestionDO extends BaseDO {
+public class QuestionRespDTO {
     /**
      * id
      */
@@ -46,5 +46,13 @@ public class QuestionDO extends BaseDO {
      */
     private int solvedFlag;
 
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 
+    /**
+     * 修改时间
+     */
+    private Date updateTime;
 }

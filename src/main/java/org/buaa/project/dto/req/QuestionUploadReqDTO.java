@@ -8,13 +8,11 @@ import java.util.List;
 
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class QuestionUploadReqDTO {
     /**
      * 包含的图片
      */
-    private List<String> pictures;
+    private String pictures;
 
     /**
      * 分类id
