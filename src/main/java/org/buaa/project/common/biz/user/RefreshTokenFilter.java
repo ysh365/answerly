@@ -15,8 +15,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_EXPIRE;
-import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_KEY;
+import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_EXPIRE;
+import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_KEY;
 
 /**
  * 刷新 Token 过滤器
@@ -25,7 +25,6 @@ import static org.buaa.project.common.consts.RedisCacheConstant.USER_LOGIN_KEY;
 public class RefreshTokenFilter implements Filter {
 
     private final StringRedisTemplate stringRedisTemplate;
-
 
     @SneakyThrows
     @Override

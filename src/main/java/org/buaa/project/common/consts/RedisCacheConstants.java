@@ -3,7 +3,7 @@ package org.buaa.project.common.consts;
 /**
  * Redis缓存常量
  */
-public class RedisCacheConstant {
+public class RedisCacheConstants {
 
     /**
      * 用户注册分布式锁

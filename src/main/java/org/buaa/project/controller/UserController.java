@@ -1,10 +1,5 @@
 package org.buaa.project.controller;
 
-
-/**
- * 用户管理控制层
- */
-
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
@@ -25,10 +20,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+/**
+ * 用户管理控制层
+ */
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
 
     private final UserService userService;
 

@@ -4,7 +4,7 @@ package org.buaa.project.common.consts;
 /**
  * 邮件发送常量
  */
-public class MailSendConst {
+public class MailSendConstants {
 
     /**
      * 内容
