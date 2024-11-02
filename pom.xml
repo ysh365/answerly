@@ -16,6 +16,7 @@
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <hutool-all.version>5.8.20</hutool-all.version>
         <redisson.version>3.21.3</redisson.version>
+        <guava.version>30.0-jre</guava.version>
     </properties>
 
     <dependencyManagement>
@@ -88,6 +89,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
             <version>3.15.1</version>
@@ -105,6 +112,35 @@
                     <target>17</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-jar-plugin</artifactId>
+               <version>3.2.0</version>
+               <configuration>
+                   <archive>
+                       <manifest>
+                           <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                           <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                           <mainClass>org.buaa.project.ProjectApplication</mainClass>
+                       </manifest>
+                   </archive>
+               </configuration>
+           </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dto.req.UserLoginReqDTO;
 import org.buaa.project.dto.req.UserRegisterReqDTO;
+import org.buaa.project.dto.req.UserUpdateReqDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 
@@ -65,6 +66,13 @@ public interface UserService extends IService<UserDO> {
      * @param token    用户登录 Token
      */
     void logout(String username, String token);
+
+    /**
+     * 更新用户信息
+     *
+     * @param requestParam 更新用户信息请求参数
+     */
+    void update(UserUpdateReqDTO requestParam);
 
 
 }
