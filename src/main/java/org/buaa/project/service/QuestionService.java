@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dto.req.QuestionFindReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
+import org.buaa.project.dto.resp.QuestionBriefRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface QuestionService extends IService<QuestionDO> {
 
     Boolean likeQuestion(Long id);
 
-    List<QuestionRespDTO> findQuestion(QuestionFindReqDTO params);
-    List<QuestionRespDTO> findHotQuestion(int category);
+    List<QuestionBriefRespDTO> findQuestion(QuestionFindReqDTO params);
+    List<QuestionBriefRespDTO> findHotQuestion(int category);
+    QuestionRespDTO findQuestionById(Long id);
 }
