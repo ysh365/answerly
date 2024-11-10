@@ -29,7 +29,6 @@ public class LoginCheckFilter implements Filter {
 
     private static final List<String> IGNORE_URI = Lists.newArrayList(
             "/api/answerly/v1/user/login",
-            "/api/answerly/v1/user/has-username",
             "/api/answerly/v1/user/send-code"
     );
 
