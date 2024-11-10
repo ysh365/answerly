@@ -19,11 +19,11 @@ public class ImageController {
     private final ImageService imageService;
 
     /**
-     * 上传图片
+     * oss上传图片
      */
-    @PostMapping("/api/answerly/v1/image")
-    public Result<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        return Results.success(imageService.uploadImage(file));
+    @PostMapping("/oss/upload")
+    public Result<String> ossUploadImage(@RequestParam("file") MultipartFile file) {
+        return Results.success(imageService.ossUploadImage(file));
     }
 
 }

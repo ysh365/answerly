@@ -6,9 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
  * 图片接口层
  */
 public interface ImageService {
+
     /**
-     * 上传图片
+     * oss上传图片
      */
-    String uploadImage(MultipartFile file);
+    String ossUploadImage(MultipartFile file);
 
 }
