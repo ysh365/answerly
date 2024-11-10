@@ -191,11 +191,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (!requestParam.getOldUsername().equals(requestParam.getNewUsername()) && hasUsername(requestParam.getNewUsername())) {
             throw new ClientException(USER_NAME_EXIST);
         }
-        UserDO userDO = new UserDO();
-        userDO.setUsername(requestParam.getNewUsername());
-        userDO.setIntroduction(requestParam.getIntroduction());
-        userDO.setPhone(requestParam.getPhone());
-        userDO.setPassword(requestParam.getPassword());
+        UserDO userDO = UserDO.builder()
+                        .username(requestParam.getNewUsername())
+                        .password(requestParam.getPassword())
+                        .image(requestParam.getImage())
+                        .phone(requestParam.getPhone())
+                        .introduction(requestParam.getIntroduction())
+                        .build();
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class)
             .eq(UserDO::getUsername, requestParam.getOldUsername());
         baseMapper.update(userDO, updateWrapper);

@@ -24,6 +24,11 @@ public class UserUpdateReqDTO {
     private String password;
 
     /**
+     * 头像
+     */
+    private String image;
+
+    /**
      * 手机号
      */
     private String phone;

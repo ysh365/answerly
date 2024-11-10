@@ -1,6 +1,7 @@
 package org.buaa.project.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
 
@@ -8,6 +9,7 @@ import org.buaa.project.common.database.BaseDO;
  * 用户持久层实体
  */
 @Data
+@Builder
 @TableName("user")
 public class UserDO extends BaseDO {
     /**
@@ -24,6 +26,11 @@ public class UserDO extends BaseDO {
      * 密码
      */
     private String password;
+
+    /**
+     * 头像
+     */
+    private String image;
 
     /**
      * 邮箱
