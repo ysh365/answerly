@@ -41,7 +41,7 @@ CREATE TABLE `sys_user` (
 
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
-                            `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                             `name`  varchar(50)        NOT NULL COMMENT '分类名称',
                             `image` varchar(50)        DEFAULT NULL COMMENT '图片',
                             `sort` int(11)             DEFAULT 0    COMMENT '排序',
