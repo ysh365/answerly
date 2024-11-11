@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.CategoryDO;
 import org.buaa.project.dto.req.CategoryCreateReqDTO;
 import org.buaa.project.dto.req.CategoryUpdateReqDTO;
+import org.buaa.project.dto.resp.CategoryRespDTO;
+
+import java.util.List;
 
 /**
  * 主题类别接口层
@@ -24,5 +27,10 @@ public interface CategoryService extends IService<CategoryDO> {
      * 修改主题
      */
     void updateCategory(CategoryUpdateReqDTO requestParam);
+
+    /**
+     * 查询所有主题
+     */
+    List<CategoryRespDTO> listCategory();
 
 }

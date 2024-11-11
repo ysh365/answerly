@@ -1,6 +1,7 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,8 +10,11 @@ import org.buaa.project.dao.entity.CategoryDO;
 import org.buaa.project.dao.mapper.CategoryMapper;
 import org.buaa.project.dto.req.CategoryCreateReqDTO;
 import org.buaa.project.dto.req.CategoryUpdateReqDTO;
+import org.buaa.project.dto.resp.CategoryRespDTO;
 import org.buaa.project.service.CategoryService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 主题类别接口实现层
@@ -49,4 +53,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryDO>
         CategoryDO categoryDO = BeanUtil.toBean(requestParam, CategoryDO.class);
         baseMapper.update(categoryDO, queryWrapper);
     }
+
+    /**
+     * 查询所有主题
+     */
+    @Override
+    public List<CategoryRespDTO> listCategory() {
+        LambdaQueryWrapper<CategoryDO> queryWrapper = Wrappers.lambdaQuery(CategoryDO.class)
+                .eq(CategoryDO::getDelFlag, 0)
+                .orderByAsc(CategoryDO::getSort, CategoryDO::getUpdateTime);
+        List<CategoryDO> groupDOList = baseMapper.selectList(queryWrapper);
+        return BeanUtil.copyToList(groupDOList, CategoryRespDTO.class);
+    }
+
 }
