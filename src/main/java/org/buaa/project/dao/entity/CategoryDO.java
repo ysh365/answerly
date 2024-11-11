@@ -1,8 +1,10 @@
 package org.buaa.project.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.buaa.project.common.database.BaseDO;
 
 /**
@@ -10,8 +12,11 @@ import org.buaa.project.common.database.BaseDO;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("category")
 public class CategoryDO extends BaseDO {
+
     /**
      * id
      */
