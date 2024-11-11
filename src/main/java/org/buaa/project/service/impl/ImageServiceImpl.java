@@ -41,9 +41,8 @@ public class ImageServiceImpl implements ImageService {
             String fileName = createNewFileName(file.getOriginalFilename());
             OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
             ossClient.putObject(bucketName, fileName, inputStream);
-            String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
             ossClient.shutdown();
-            return url;
+            return fileName;
         } catch (IOException e) {
             throw new ServiceException(IMAGE_UPLOAD_ERROR);
         }
