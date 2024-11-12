@@ -56,12 +56,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     @Transactional
     @Override
     public Boolean deleteQuestion(Long id) {
-//        int res = baseMapper.deleteById(id);
-//        return res > 0;
-        QuestionDO question = new QuestionDO();
-        question.setId(id);
-        question.setDelFlag(1);
-        int result = baseMapper.updateById(question);
+        QuestionDO existingQuestion = baseMapper.selectById(id);
+        if (existingQuestion == null) {
+            throw new ServiceException("问题不存在");
+        }
+        existingQuestion.setDelFlag(1);
+        int result = baseMapper.updateById(existingQuestion);
         return result > 0;
     }
 
