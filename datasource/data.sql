@@ -9,6 +9,7 @@ CREATE TABLE `user` (
                         `username` varchar(10)     NOT NULL COMMENT '用户名',
                         `password` varchar(60)     NOT NULL COMMENT '密码',
                         `mail` varchar(100)       NOT NULL COMMENT '邮箱',
+                        `image` varchar(255)     DEFAULT NULL COMMENT '头像',
                         `phone` varchar(100)       DEFAULT NULL COMMENT '手机号',
                         `introduction` varchar(16) DEFAULT NULL COMMENT '个人简介',
                         `like_count` int(11)       DEFAULT 0 COMMENT '点赞数',
@@ -42,7 +43,7 @@ DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
                             `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
                             `category_name` varchar(255) NOT NULL COMMENT '分类名称',
-                            `pic_url` varchar(255)     DEFAULT NULL COMMENT '图片',
+                            `image` varchar(255)     DEFAULT NULL COMMENT '图片',
                             `sort` int(11)             DEFAULT NULL COMMENT '排序',
                             `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                             `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
@@ -58,6 +59,7 @@ CREATE TABLE `question` (
                             `title` varchar(32)        NOT NULL COMMENT '标题',
                             `content` varchar(1024)    NOT NULL COMMENT '内容',
                             `user_id` bigint(20)       DEFAULT NULL COMMENT '发布人ID',
+                            `images` varchar(2048)     DEFAULT NULL COMMENT '照片路径，最多9张，多张以","隔开',
                             `view_count` int(11)       DEFAULT 0 COMMENT '浏览量',
                             `like_count` int(11)       DEFAULT 0 COMMENT '点赞数',
                             `solved_flag` tinyint(1)   DEFAULT 0 COMMENT '是否解决 0：未解决 1：已解决',
@@ -69,17 +71,6 @@ CREATE TABLE `question` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题';
 
 
-DROP TABLE IF EXISTS `images`;
-CREATE TABLE `images` (
-                          `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                          `img_url` varchar(100)    NOT NULL COMMENT '图片地址',
-                          `user_id` bigint(20)      DEFAULT NULL COMMENT '发布人ID',
-                          `question_id` bigint(20)  DEFAULT NULL COMMENT '问题ID',
-                          `answer_id` bigint(20)    DEFAULT NULL COMMENT '问题回复ID',
-                          PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='照片墙';
-
-
 DROP TABLE IF EXISTS `answer`;
 CREATE TABLE `answer` (
                           `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -87,11 +78,12 @@ CREATE TABLE `answer` (
                           `user_id` bigint(20)       DEFAULT NULL COMMENT '发布人ID',
                           `question_id` bigint(20)   DEFAULT NULL COMMENT '问题ID',
                           `content` varchar(1024)    NOT NULL COMMENT '内容',
+                          `images` varchar(2048)     DEFAULT NULL COMMENT '照片路径，最多9张，多张以","隔开',
                           `like_count` int(11)       DEFAULT 0 COMMENT '点赞数',
                           `useful` tinyint(1)        NOT NULL COMMENT '是否有用',
                           `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                           `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
                           `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题回复';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回复';
 
