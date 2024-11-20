@@ -3,6 +3,7 @@ package org.buaa.project.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dto.req.QuestionFindReqDTO;
+import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionBriefRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
@@ -16,6 +17,7 @@ public interface QuestionService extends IService<QuestionDO> {
     Boolean deleteQuestion(Long id);
 
     Boolean likeQuestion(Long id);
+    Boolean updateQuestion(QuestionUpdateReqDTO params);
 
     List<QuestionBriefRespDTO> findQuestion(QuestionFindReqDTO params);
     List<QuestionBriefRespDTO> findHotQuestion(int category);

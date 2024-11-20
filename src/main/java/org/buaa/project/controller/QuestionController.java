@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
 import org.buaa.project.dto.req.QuestionFindReqDTO;
+import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionBriefRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
@@ -58,6 +59,12 @@ public class QuestionController {
     @GetMapping("/api/answerly/v1/question/{id}")
     public Result<QuestionRespDTO> findQuestionById(@PathVariable("id") Long id) {
         return Results.success(questionService.findQuestionById(id));
+    }
+    //更新题目
+    @PutMapping("/api/answerly/v1/question")
+    public Result<Boolean> updateQuestion(@RequestBody QuestionUpdateReqDTO questionUpdateReqDTO) {
+        Boolean isUpdated = questionService.updateQuestion(questionUpdateReqDTO);
+        return Results.success(isUpdated);
     }
 }
 

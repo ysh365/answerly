@@ -1,18 +1,10 @@
-package org.buaa.project.dao.entity;
+package org.buaa.project.dto.req;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.buaa.project.common.database.BaseDO;
 
-import java.util.Date;
 @Data
-@TableName("answer")
-public class AnswerDO extends BaseDO {
-    /**
-     * ID - unique identifier for each answer
-     */
-    private Long id;
-
+public class AnswerUpdateReqDTO {
+    private long id;
     /**
      * category_id - the ID of the category/theme this answer belongs to
      */
@@ -37,14 +29,4 @@ public class AnswerDO extends BaseDO {
      * images - paths to images associated with the answer, separated by commas, with a maximum of 9 images
      */
     private String images;
-
-    /**
-     * like_count - the count of likes this answer has received, default is 0
-     */
-    private Integer likeCount;
-
-    /**
-     * useful - indicates if the answer is marked as useful, 1 for true, 0 for false
-     */
-    private int useful;
 }

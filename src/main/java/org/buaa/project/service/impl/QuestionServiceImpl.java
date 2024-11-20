@@ -2,6 +2,7 @@ package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,6 +11,7 @@ import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.QuestionFindReqDTO;
+import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionBriefRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
@@ -18,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         //todo 验证category和idUser是否在category和user表中存在
         int inserted = baseMapper.insert(BeanUtil.toBean(params, QuestionDO.class));
         boolean isSavedQuestion = inserted > 0;
-        if (params.getPictures() != null && !params.getPictures().isEmpty()) {
-            //todo 进行图片处理
-        }
         return isSavedQuestion;
     }
 
@@ -154,6 +152,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         QuestionRespDTO result = new QuestionRespDTO();
         BeanUtils.copyProperties(question, result);
         return result;
+    }
+
+    @Override
+    public Boolean updateQuestion(QuestionUpdateReqDTO requestParam){
+        LambdaUpdateWrapper<QuestionDO> queryWrapper = Wrappers.lambdaUpdate(QuestionDO.class)
+                .eq(QuestionDO::getId, requestParam.getId());
+        QuestionDO questionDO = BeanUtil.toBean(requestParam, QuestionDO.class);
+        int result = baseMapper.update(questionDO, queryWrapper);
+        return result > 0;
     }
 
 }
