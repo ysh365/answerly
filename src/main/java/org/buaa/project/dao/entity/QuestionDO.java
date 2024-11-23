@@ -46,5 +46,8 @@ public class QuestionDO extends BaseDO {
      */
     private int solvedFlag;
 
-
+    /**
+     * 包含的图片
+     */
+    private String images;
 }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ServiceException;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
@@ -40,7 +41,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     @Override
     public Boolean uploadQuestion(QuestionUploadReqDTO params) {
         //todo 验证category和idUser是否在category和user表中存在
-        int inserted = baseMapper.insert(BeanUtil.toBean(params, QuestionDO.class));
+        QuestionDO question = BeanUtil.toBean(params, QuestionDO.class);
+        question.setUserId(Long.valueOf(UserContext.getUserId()));
+//        question.setImages(String.join(",", params.getImages()));
+        int inserted = baseMapper.insert(question);
         boolean isSavedQuestion = inserted > 0;
         return isSavedQuestion;
     }
@@ -158,7 +162,14 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     public Boolean updateQuestion(QuestionUpdateReqDTO requestParam){
         LambdaUpdateWrapper<QuestionDO> queryWrapper = Wrappers.lambdaUpdate(QuestionDO.class)
                 .eq(QuestionDO::getId, requestParam.getId());
-        QuestionDO questionDO = BeanUtil.toBean(requestParam, QuestionDO.class);
+        QuestionDO questionDO = baseMapper.selectOne(queryWrapper);
+        if(questionDO == null) {
+            throw new ServiceException("问题不存在");
+        }
+        if(!String.valueOf(questionDO.getUserId()).equals(UserContext.getUserId())){
+            throw new ServiceException("没有删除权限");
+        }
+        BeanUtils.copyProperties(requestParam, questionDO);
         int result = baseMapper.update(questionDO, queryWrapper);
         return result > 0;
     }

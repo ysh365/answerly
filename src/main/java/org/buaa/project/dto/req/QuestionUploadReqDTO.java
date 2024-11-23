@@ -12,7 +12,7 @@ public class QuestionUploadReqDTO {
     /**
      * 包含的图片
      */
-    private String pictures;
+    private String images;
 
     /**
      * 分类id
@@ -28,11 +28,5 @@ public class QuestionUploadReqDTO {
      * 内容
      */
     private String content;
-
-    /**
-     * 发布人id
-     */
-    private Long userId;
-
 
 }
