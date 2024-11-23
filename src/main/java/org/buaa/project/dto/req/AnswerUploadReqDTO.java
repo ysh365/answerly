@@ -1,4 +1,5 @@
 package org.buaa.project.dto.req;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -6,16 +7,14 @@ public class AnswerUploadReqDTO {
     /**
      * category_id - the ID of the category/theme this answer belongs to
      */
+    @JsonProperty("category_id")
     private Long categoryId;
 
-    /**
-     * user_id - the ID of the user who posted the answer
-     */
-    private Long userId;
 
     /**
      * question_id - the ID of the question this answer responds to
      */
+    @JsonProperty("question_id")
     private Long questionId;
 
     /**
