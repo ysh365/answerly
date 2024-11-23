@@ -14,7 +14,7 @@ public class QuestionDO extends BaseDO {
     /**
      * 分类id
      */
-    private Integer category;
+    private Long categoryId;
 
     /**
      * 标题

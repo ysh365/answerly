@@ -23,17 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryDO> implements CategoryService {
 
-    /**
-     * 增加主题
-     */
     @Override
     public void addCategory(CategoryCreateReqDTO requestParam) {
         baseMapper.insert(BeanUtil.toBean(requestParam, CategoryDO.class));
     }
 
-    /**
-     * 删除主题
-     */
     @Override
     public void deleteCategory(Long id) {
         LambdaUpdateWrapper<CategoryDO> queryWrapper = Wrappers.lambdaUpdate(CategoryDO.class)
@@ -43,9 +37,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryDO>
         baseMapper.update(categoryDO, queryWrapper);
     }
 
-    /**
-     * 修改主题
-     */
     @Override
     public void updateCategory(CategoryUpdateReqDTO requestParam) {
         LambdaUpdateWrapper<CategoryDO> queryWrapper = Wrappers.lambdaUpdate(CategoryDO.class)
@@ -54,9 +45,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryDO>
         baseMapper.update(categoryDO, queryWrapper);
     }
 
-    /**
-     * 查询所有主题
-     */
     @Override
     public List<CategoryRespDTO> listCategory() {
         LambdaQueryWrapper<CategoryDO> queryWrapper = Wrappers.lambdaQuery(CategoryDO.class)

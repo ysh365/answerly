@@ -32,9 +32,6 @@ public class ImageServiceImpl implements ImageService {
     @Value("${spring.aliyun.oss.bucketName}")
     private String bucketName;
 
-    /**
-     * oss 上传图片
-     */
     public String ossUploadImage(MultipartFile file) {
         try {
             InputStream inputStream = file.getInputStream();

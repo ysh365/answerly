@@ -55,7 +55,7 @@ CREATE TABLE `category` (
 DROP TABLE IF EXISTS `question`;
 CREATE TABLE `question` (
                             `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                            `category` int(11)         NOT NULL COMMENT '分类ID',
+                            `category_id` bigint(20)   NOT NULL COMMENT '分类ID',
                             `title` varchar(256)       NOT NULL COMMENT '标题',
                             `content` varchar(2048)    DEFAULT NULL COMMENT '内容',
                             `user_id` bigint(20)       DEFAULT NULL COMMENT '发布人ID',

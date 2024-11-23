@@ -4,8 +4,12 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * 问题详细信息响应
+ */
 @Data
 public class QuestionRespDTO {
+
     /**
      * id
      */
@@ -14,7 +18,7 @@ public class QuestionRespDTO {
     /**
      * 分类id
      */
-    private Integer category;
+    private Long category;
 
     /**
      * 标题
