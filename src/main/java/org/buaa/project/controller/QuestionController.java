@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 图片管理控制层
+ * 题目管理控制层
  */
 @RestController
 @RequiredArgsConstructor

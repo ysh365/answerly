@@ -9,7 +9,11 @@ public enum QAErrorCodeEnum implements IErrorCode {
 
     QUESTION_NULL("C000101", "问题不存在"),
 
-    QUESTION_ACCESS_CONTROL_ERROR("C000102", "问题操作权限错误"),;
+    QUESTION_ACCESS_CONTROL_ERROR("C000102", "问题操作权限错误"),
+
+    ANSWER_NULL("C000103", "回答不存在"),
+
+    ANSWER_ACCESS_CONTROL_ERROR("C000104", "回答操作权限错误");
 
     private final String code;
 

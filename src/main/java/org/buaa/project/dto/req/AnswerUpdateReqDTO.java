@@ -1,17 +1,14 @@
 package org.buaa.project.dto.req;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class AnswerUpdateReqDTO {
-    private long id;
-    /**
-     * category_id - the ID of the category/theme this answer belongs to
-     */
-    @JsonProperty("category_id")
-    private Long categoryId;
 
+    /**
+     * id
+     */
+    private Long id;
 
     /**
      * content - the content of the answer, with a maximum length of 1024 characters

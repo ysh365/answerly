@@ -3,8 +3,6 @@ package org.buaa.project.dao.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
-
-import java.util.Date;
 @Data
 @TableName("answer")
 public class AnswerDO extends BaseDO {
@@ -12,11 +10,6 @@ public class AnswerDO extends BaseDO {
      * ID - unique identifier for each answer
      */
     private Long id;
-
-    /**
-     * category_id - the ID of the category/theme this answer belongs to
-     */
-    private Long categoryId;
 
     /**
      * user_id - the ID of the user who posted the answer

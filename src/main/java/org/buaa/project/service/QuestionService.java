@@ -77,4 +77,18 @@ public interface QuestionService extends IService<QuestionDO> {
      */
     List<QuestionPageRespDTO> findHotQuestion(int category);
 
+    /**
+     * 检查题目是否存在
+     *
+     * @param id
+     */
+    void checkQuestionExist(Long id);
+
+    /**
+     * 检查题目是否为当前用户所有
+     *
+     * @param id
+     */
+    void checkQuestionOwner(Long id);
+
 }
