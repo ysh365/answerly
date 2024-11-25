@@ -10,11 +10,13 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.buaa.project.dao.entity.UserDO;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static org.buaa.project.common.consts.RedisCacheConstants.USER_INFO_KEY;
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_EXPIRE;
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_KEY;
 
@@ -36,13 +38,17 @@ public class RefreshTokenFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-        Object userInfoJsonStr = stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + username, token);
-        if (userInfoJsonStr == null) {
+        String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + username);
+        if (StrUtil.isBlank(hasLogin)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-        UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
+        UserDO userDO = JSON.parseObject(stringRedisTemplate.opsForValue().get(USER_INFO_KEY + username), UserDO.class);
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
         userInfoDTO.setToken(token);
+        userInfoDTO.setUsername(username);
+        userInfoDTO.setUserId(String.valueOf(userDO.getId()));
+        userInfoDTO.setUserType(userDO.getUserType());
         UserContext.setUser(userInfoDTO);
 
         stringRedisTemplate.expire(USER_LOGIN_KEY + username, USER_LOGIN_EXPIRE, TimeUnit.DAYS);

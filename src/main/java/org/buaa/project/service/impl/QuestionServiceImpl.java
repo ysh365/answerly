@@ -36,6 +36,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     public void uploadQuestion(QuestionUploadReqDTO requestParam) {
         QuestionDO question = BeanUtil.toBean(requestParam, QuestionDO.class);
         question.setUserId(Long.valueOf(UserContext.getUserId()));
+        question.setUsername(UserContext.getUsername());
         baseMapper.insert(question);
     }
 

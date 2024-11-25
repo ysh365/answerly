@@ -30,7 +30,7 @@ public class UserDO extends BaseDO {
     /**
      * 头像
      */
-    private String image;
+    private String avatar;
 
     /**
      * 邮箱

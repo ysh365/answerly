@@ -32,6 +32,11 @@ public class QuestionDO extends BaseDO {
     private Long userId;
 
     /**
+     * 发布人用户名
+     */
+    private String username;
+
+    /**
      * 浏览量
      */
     private Integer viewCount;
