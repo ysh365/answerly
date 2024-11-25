@@ -1,9 +1,12 @@
 package org.buaa.project.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.AnswerDO;
+import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
+import org.buaa.project.dto.resp.AnswerPageRespDTO;
 
 public interface AnswerService extends IService<AnswerDO> {
 
@@ -48,5 +51,12 @@ public interface AnswerService extends IService<AnswerDO> {
      * @param id
      */
     void checkAnswerOwner(long id);
+
+    /**
+     * 分页查询回答
+     * @param requestParam
+     * @return
+     */
+    IPage<AnswerPageRespDTO> pageAnswer(AnswerPageReqDTP requestParam);
 
 }

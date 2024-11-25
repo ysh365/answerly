@@ -1,12 +1,16 @@
 package org.buaa.project.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
+import org.buaa.project.dto.resp.AnswerPageRespDTO;
 import org.buaa.project.service.AnswerService;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,5 +75,12 @@ public class AnswerController {
         return Results.success();
     }
 
+    /**
+     * 分页查询某题的回答
+     */
+    @GetMapping("/api/answerly/v1/answer/page")
+    public Result<IPage<AnswerPageRespDTO>> pageAnswer(AnswerPageReqDTP requestParam) {
+        return Results.success(answerService.pageAnswer(requestParam));
+    }
 
 }

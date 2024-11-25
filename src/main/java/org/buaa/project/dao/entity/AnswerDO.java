@@ -17,6 +17,11 @@ public class AnswerDO extends BaseDO {
     private Long userId;
 
     /**
+     * username - the username of the user who posted the answer
+     */
+    private String username;
+
+    /**
      * question_id - the ID of the question this answer responds to
      */
     private Long questionId;
