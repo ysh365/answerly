@@ -31,6 +31,11 @@ public class QuestionRespDTO {
     private String content;
 
     /**
+     * 图片
+     */
+    private String images;
+
+    /**
      * 发布人id
      */
     private Long userId;
