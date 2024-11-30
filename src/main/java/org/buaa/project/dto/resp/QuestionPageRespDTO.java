@@ -2,10 +2,12 @@ package org.buaa.project.dto.resp;
 
 import lombok.Data;
 
-import java.util.Date;
-
+/**
+ * 问题分页查询响应
+ */
 @Data
-public class QuestionBriefRespDTO {
+public class QuestionPageRespDTO {
+
     /**
      * id
      */

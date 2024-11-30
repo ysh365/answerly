@@ -26,7 +26,7 @@ public class UserUpdateReqDTO {
     /**
      * 头像
      */
-    private String image;
+    private String avatar;
 
     /**
      * 手机号

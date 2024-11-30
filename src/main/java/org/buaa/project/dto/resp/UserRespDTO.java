@@ -9,6 +9,7 @@ import org.buaa.project.serialize.PhoneDesensitizationSerializer;
  */
 @Data
 public class UserRespDTO {
+
     /**
      * id
      */

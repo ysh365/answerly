@@ -3,19 +3,23 @@ package org.buaa.project.common.enums;
 import org.buaa.project.common.convention.errorcode.IErrorCode;
 
 /**
- * 系统错误码
+ * 问答错误码
  */
-public enum ServiceErrorCodeEnum implements IErrorCode {
+public enum QAErrorCodeEnum implements IErrorCode {
 
-    MAIL_SEND_ERROR("B000101", "邮件发送错误"),
+    QUESTION_NULL("C000101", "问题不存在"),
 
-    IMAGE_UPLOAD_ERROR("B000102", "图片上传错误");
+    QUESTION_ACCESS_CONTROL_ERROR("C000102", "问题操作权限错误"),
+
+    ANSWER_NULL("C000103", "回答不存在"),
+
+    ANSWER_ACCESS_CONTROL_ERROR("C000104", "回答操作权限错误");
 
     private final String code;
 
     private final String message;
 
-    ServiceErrorCodeEnum(String code, String message) {
+    QAErrorCodeEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }

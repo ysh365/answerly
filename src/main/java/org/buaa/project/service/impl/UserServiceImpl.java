@@ -1,8 +1,8 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -33,11 +33,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.MailSendConstants.EMAIL_SUFFIX;
+import static org.buaa.project.common.consts.RedisCacheConstants.USER_INFO_KEY;
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_EXPIRE;
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_LOGIN_KEY;
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_REGISTER_CODE_EXPIRE;
@@ -129,6 +129,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             if (inserted < 1) {
                 throw new ClientException(USER_SAVE_ERROR);
             }
+            UserDO userDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)
+                    .eq(UserDO::getUsername, requestParam.getUsername()));
+            stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getUsername(), JSON.toJSONString(userDO));
         } catch (DuplicateKeyException ex) {
             throw new ClientException(USER_EXIST);
         } finally {
@@ -148,30 +151,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(USER_PASSWORD_ERROR);
         }
         /**
-         * Hash
+         * String
          * Key：user:login:username
-         * Value：
-         *  Key：token标识
-         *  Val：JSON 字符串（用户信息）
+         * Value: token标识
          */
-        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries(USER_LOGIN_KEY + requestParam.getUsername());
-        if (CollUtil.isNotEmpty(hasLoginMap)) {
+        String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + requestParam.getUsername());
+        if (StrUtil.isNotEmpty(hasLogin)) {
             throw new ClientException(USER_REPEATED_LOGIN);
         }
-
         String uuid = UUID.randomUUID().toString();
-        stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + requestParam.getUsername(), uuid, JSON.toJSONString(userDO));
-        stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(), USER_LOGIN_EXPIRE, TimeUnit.DAYS);
+        stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + requestParam.getUsername(), uuid, USER_LOGIN_EXPIRE, TimeUnit.DAYS);
         return new UserLoginRespDTO(uuid);
     }
 
     @Override
     public Boolean checkLogin(String username, String token) {
-        Map<Object, Object> hasLoginMap = stringRedisTemplate.opsForHash().entries(USER_LOGIN_KEY + username);
-        if (CollUtil.isEmpty(hasLoginMap)) {
+        String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + username);
+        if (StrUtil.isEmpty(hasLogin)) {
             return false;
         }
-        return hasLoginMap.containsKey(token);
+        return Objects.equals(hasLogin, token);
     }
 
     @Override
@@ -194,7 +193,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         UserDO userDO = UserDO.builder()
                         .username(requestParam.getNewUsername())
                         .password(requestParam.getPassword())
-                        .image(requestParam.getImage())
+                        .avatar(requestParam.getAvatar())
                         .phone(requestParam.getPhone())
                         .introduction(requestParam.getIntroduction())
                         .build();
@@ -205,15 +204,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
          * 更新redis缓存
          */
         if (!requestParam.getOldUsername().equals(requestParam.getNewUsername())) {
-            Object userInfoJsonStr = stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + requestParam.getOldUsername(), UserContext.getToken());
-            if (userInfoJsonStr != null) {
-                stringRedisTemplate.delete(USER_LOGIN_KEY + requestParam.getOldUsername());
-                stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + requestParam.getNewUsername(), UserContext.getToken(), JSON.toJSONString(userInfoJsonStr));
-                stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getNewUsername(), USER_LOGIN_EXPIRE, TimeUnit.DAYS);
-            } else {
-                throw new ServiceException(USER_UPDATE_ERROR);
-            }
+            stringRedisTemplate.delete(USER_INFO_KEY + requestParam.getOldUsername());
+            stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + requestParam.getNewUsername(), UserContext.getToken(), USER_LOGIN_EXPIRE, TimeUnit.DAYS);
         }
+        UserDO newUserDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, requestParam.getNewUsername()));
+        stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getNewUsername(), JSON.toJSONString(newUserDO));
     }
 
 

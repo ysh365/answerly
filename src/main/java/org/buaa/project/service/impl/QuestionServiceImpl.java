@@ -3,26 +3,27 @@ package org.buaa.project.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
-import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
-import org.buaa.project.dto.req.QuestionFindReqDTO;
+import org.buaa.project.dto.req.QuestionPageReqDTO;
 import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
-import org.buaa.project.dto.resp.QuestionBriefRespDTO;
+import org.buaa.project.dto.resp.QuestionPageRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
 import org.buaa.project.service.QuestionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_ACCESS_CONTROL_ERROR;
+import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_NULL;
 
 /**
  * The type Question service.
@@ -31,125 +32,58 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
 
-    /**
-     * 上传题目
-     *
-     * @param params
-     * @return
-     */
-    @Transactional
     @Override
-    public Boolean uploadQuestion(QuestionUploadReqDTO params) {
-        //todo 验证category和idUser是否在category和user表中存在
-        QuestionDO question = BeanUtil.toBean(params, QuestionDO.class);
+    public void uploadQuestion(QuestionUploadReqDTO requestParam) {
+        QuestionDO question = BeanUtil.toBean(requestParam, QuestionDO.class);
         question.setUserId(Long.valueOf(UserContext.getUserId()));
-//        question.setImages(String.join(",", params.getImages()));
-        int inserted = baseMapper.insert(question);
-        boolean isSavedQuestion = inserted > 0;
-        return isSavedQuestion;
+        question.setUsername(UserContext.getUsername());
+        baseMapper.insert(question);
     }
 
-    /**
-     * 删除题目
-     *
-     * @param id
-     * @return
-     */
-    @Transactional
     @Override
-    public Boolean deleteQuestion(Long id) {
-        QuestionDO existingQuestion = baseMapper.selectById(id);
-        if (existingQuestion == null) {
-            throw new ServiceException("问题不存在");
-        }
-        existingQuestion.setDelFlag(1);
-        int result = baseMapper.updateById(existingQuestion);
-        return result > 0;
+    public void updateQuestion(QuestionUpdateReqDTO requestParam){
+        Long id = requestParam.getId();
+        checkQuestionExist(id);
+        checkQuestionOwner(id);
+
+        LambdaUpdateWrapper<QuestionDO> queryWrapper = Wrappers.lambdaUpdate(QuestionDO.class)
+                .eq(QuestionDO::getId, requestParam.getId());
+        QuestionDO questionDO = baseMapper.selectOne(queryWrapper);
+        BeanUtils.copyProperties(requestParam, questionDO);
+        baseMapper.update(questionDO, queryWrapper);
     }
 
-    /**
-     * 点赞题目
-     *
-     * @param id
-     * @return
-     */
-    @Transactional
     @Override
-    public Boolean likeQuestion(Long id) {
+    public void deleteQuestion(Long id) {
+        checkQuestionExist(id);
+        checkQuestionOwner(id);
+
         QuestionDO question = baseMapper.selectById(id);
-        if (question == null) {
-            throw new ServiceException("问题不存在");
-        }
+        question.setDelFlag(1);
+        baseMapper.updateById(question);
+    }
+
+    @Override
+    public void likeQuestion(Long id) {
+        checkQuestionExist(id);
+        checkQuestionOwner(id);
+
+        QuestionDO question = baseMapper.selectById(id);
         int curLikeCount = question.getLikeCount();
         question.setLikeCount(curLikeCount + 1);
-        int result = baseMapper.updateById(question);
-        return result > 0;
+        baseMapper.updateById(question);
     }
 
-    /**
-     * 查找问题
-     *
-     * @param params
-     * @return
-     */
-    @Transactional
     @Override
-    public List<QuestionBriefRespDTO> findQuestion(QuestionFindReqDTO params) {
-        LambdaQueryWrapper<QuestionDO> wrapper;
-        if (params.getSolvedFlag() == 2) {
-            wrapper = Wrappers.lambdaQuery(QuestionDO.class)
-                    .eq(QuestionDO::getCategory, params.getCategory());
-        } else {
-            wrapper = Wrappers.lambdaQuery(QuestionDO.class)
-                    .eq(QuestionDO::getCategory, params.getCategory())
-                    .eq(QuestionDO::getSolvedFlag, params.getSolvedFlag());
-        }
-        Page<QuestionDO> questionPage = new Page<>(params.getPage(), 10);
+    public void resolvedQuestion(Long id) {
+        checkQuestionExist(id);
+        checkQuestionOwner(id);
 
-        Page<QuestionDO> resultPage = baseMapper.selectPage(questionPage, wrapper);
-        List<QuestionBriefRespDTO> responseList = resultPage.getRecords().stream()
-                .map(questionDO -> {
-                    QuestionBriefRespDTO dto = new QuestionBriefRespDTO();
-                    BeanUtils.copyProperties(questionDO, dto);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-        return responseList;
+        QuestionDO question = baseMapper.selectById(id);
+        question.setSolvedFlag(1);
+        baseMapper.updateById(question);
     }
 
-    /**
-     * 查找热门10道题
-     *
-     * @param category
-     * @return
-     */
-    @Transactional
-    @Override
-    public List<QuestionBriefRespDTO> findHotQuestion(int category) {
-        //todo 修改热度值计算，暂时先根据like_count和view_count排序
-        LambdaQueryWrapper<QuestionDO> wrapper = Wrappers.lambdaQuery(QuestionDO.class)
-                .eq(QuestionDO::getCategory, category)
-                .orderByDesc(QuestionDO::getLikeCount)
-                .orderByDesc(QuestionDO::getViewCount)
-                .last("LIMIT 10");
-        List<QuestionDO> questionDOList = baseMapper.selectList(wrapper);
-
-        return questionDOList.stream()
-                .map(questionDO -> {
-                    QuestionBriefRespDTO dto = new QuestionBriefRespDTO();
-                    BeanUtils.copyProperties(questionDO, dto);
-                    return dto;
-                })
-                .toList();
-    }
-
-    /**
-     * 根据id获取题目信息
-     * @param id
-     * @return
-     */
-    @Transactional
     @Override
     public QuestionRespDTO findQuestionById(Long id) {
         QuestionDO question = baseMapper.selectById(id);
@@ -159,19 +93,47 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     }
 
     @Override
-    public Boolean updateQuestion(QuestionUpdateReqDTO requestParam){
-        LambdaUpdateWrapper<QuestionDO> queryWrapper = Wrappers.lambdaUpdate(QuestionDO.class)
-                .eq(QuestionDO::getId, requestParam.getId());
-        QuestionDO questionDO = baseMapper.selectOne(queryWrapper);
-        if(questionDO == null) {
-            throw new ServiceException("问题不存在");
+    public IPage<QuestionPageRespDTO> pageQuestion(QuestionPageReqDTO requestParam) {
+        LambdaQueryWrapper<QuestionDO> queryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                    .eq(QuestionDO::getDelFlag, 0)
+                    .eq(requestParam.getSolvedFlag() != 2 , QuestionDO::getSolvedFlag, requestParam.getSolvedFlag())
+                    .eq(QuestionDO::getCategoryId, requestParam.getCategoryId());
+        IPage<QuestionDO> page = baseMapper.selectPage(requestParam, queryWrapper);
+        return page.convert(each -> BeanUtil.toBean(each, QuestionPageRespDTO.class));
+    }
+
+    @Override
+    public List<QuestionPageRespDTO> findHotQuestion(int category) {
+        //todo 修改热度值计算，暂时先根据like_count和view_count排序
+        LambdaQueryWrapper<QuestionDO> wrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                .eq(QuestionDO::getCategoryId, category)
+                .orderByDesc(QuestionDO::getLikeCount)
+                .orderByDesc(QuestionDO::getViewCount)
+                .last("LIMIT 10");
+        List<QuestionDO> questionDOList = baseMapper.selectList(wrapper);
+
+        return questionDOList.stream()
+                .map(questionDO -> {
+                    QuestionPageRespDTO dto = new QuestionPageRespDTO();
+                    BeanUtils.copyProperties(questionDO, dto);
+                    return dto;
+                })
+                .toList();
+    }
+
+    public void checkQuestionExist(Long id) {
+        QuestionDO question = baseMapper.selectById(id);
+        if (question == null || question.getDelFlag() != 0) {
+            throw new ClientException(QUESTION_NULL);
         }
-        if(!String.valueOf(questionDO.getUserId()).equals(UserContext.getUserId())){
-            throw new ServiceException("没有删除权限");
+    }
+
+    public void checkQuestionOwner(Long id) {
+        QuestionDO question = baseMapper.selectById(id);
+        String userId = UserContext.getUserId();
+        if (!question.getUserId().equals(Long.valueOf(userId))) {
+            throw new ClientException(QUESTION_ACCESS_CONTROL_ERROR);
         }
-        BeanUtils.copyProperties(requestParam, questionDO);
-        int result = baseMapper.update(questionDO, queryWrapper);
-        return result > 0;
     }
 
 }

@@ -30,4 +30,9 @@ public class RedisCacheConstants {
      */
     public static final long USER_LOGIN_EXPIRE = 30L;
 
+    /**
+     * 用户信息缓存标识
+     */
+    public static final String USER_INFO_KEY = "user:info:";
+
 }

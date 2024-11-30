@@ -1,102 +1,139 @@
 package org.buaa.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
-import org.buaa.project.common.convention.exception.ServiceException;
+import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.dao.entity.AnswerDO;
-import org.buaa.project.dao.entity.QuestionDO;
+import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
-import org.buaa.project.dao.mapper.QuestionMapper;
+import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
+import org.buaa.project.dto.resp.AnswerPageRespDTO;
 import org.buaa.project.service.AnswerService;
+import org.buaa.project.service.QuestionService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.buaa.project.common.consts.RedisCacheConstants.USER_INFO_KEY;
+import static org.buaa.project.common.enums.QAErrorCodeEnum.ANSWER_ACCESS_CONTROL_ERROR;
+import static org.buaa.project.common.enums.QAErrorCodeEnum.ANSWER_NULL;
+
+/**
+ * 回答接口实现层
+ */
 @Service
 @RequiredArgsConstructor
 public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> implements AnswerService {
-    @Autowired
-    private QuestionMapper questionMapper;
-    @Transactional
+
+    private final QuestionService questionService;
+
+    private final StringRedisTemplate stringRedisTemplate;
+
     @Override
-    public Boolean likeAnswer(long id){
+    public void likeAnswer(long id){
+        checkAnswerExist(id);
+
         AnswerDO answerDO = baseMapper.selectById(id);
-        if (answerDO == null){
-            throw new ServiceException("回答不存在");
-        }
         int curLikeCount = answerDO.getLikeCount();
         answerDO.setLikeCount(curLikeCount + 1);
-        int result = baseMapper.updateById(answerDO);
-        return result > 0;
+        baseMapper.updateById(answerDO);
     }
-    @Transactional
+
     @Override
-    public Boolean uploadAnswer(AnswerUploadReqDTO reqDTO){
-        //todo 根据questionId查询题目是否存在
-        //todo 我觉得还是把answer的category字段删了比较好（）
-        QuestionDO questionDO = questionMapper.selectById(reqDTO.getQuestionId());
-        if (questionDO == null || questionDO.getDelFlag() == 1){
-            throw  new ServiceException("问题不存在或已删除");
-        }
+    public void uploadAnswer(AnswerUploadReqDTO reqDTO){
         long userId = Long.parseLong(UserContext.getUserId());
         AnswerDO answerDO = BeanUtil.copyProperties(reqDTO, AnswerDO.class);
         answerDO.setUserId(userId);
-        int inserted = baseMapper.insert(answerDO);
-        return inserted > 0;
+        answerDO.setUsername(UserContext.getUsername());
+        baseMapper.insert(answerDO);
+    }
 
-    }
-    @Transactional
     @Override
-    public Boolean deleteAnswer(long id){
-        AnswerDO existingAnswer = baseMapper.selectById(id);
-        if (existingAnswer == null) {
-            throw new ServiceException("删除时答案不存在");
-        }
-        if(!existingAnswer.getUserId().equals(Long.parseLong(UserContext.getUserId()))){
-            throw new ServiceException("没有删除权限");
-        }
-        existingAnswer.setDelFlag(1);
-        int result = baseMapper.updateById(existingAnswer);
-        return result > 0;
+    public void deleteAnswer(long id){
+        checkAnswerExist(id);
+        checkAnswerOwner(id);
+
+        AnswerDO answerDO = baseMapper.selectById(id);
+        answerDO.setDelFlag(1);
+        baseMapper.updateById(answerDO);
     }
-    @Transactional
+
     @Override
-    public Boolean markUsefulAnswer(long id){
-        AnswerDO existingAnswer = baseMapper.selectById(id);
-        if (existingAnswer == null) {
-            throw new ServiceException("标记时答案不存在");
-        }
-        QuestionDO questionDO = questionMapper.selectById(existingAnswer.getQuestionId());
-        if (questionDO == null) {
-            throw new ServiceException("标记时答案对应问题不存在");
-        }
-        if(!existingAnswer.getUserId().equals(questionDO.getUserId())){
-            throw new ServiceException("用户没有标记权限");
-        }
-        existingAnswer.setUseful(1);
-        int result = baseMapper.updateById(existingAnswer);
-        return result > 0;
+    public void markUsefulAnswer(long id){
+        checkAnswerExist(id);
+
+        AnswerDO answerDO = baseMapper.selectById(id);
+        questionService.checkQuestionOwner(answerDO.getQuestionId());
+        answerDO.setUseful(1);
+        baseMapper.updateById(answerDO);
     }
+
     @Override
-    public Boolean updateAnswer(AnswerUpdateReqDTO requestParam) {
+    public void updateAnswer(AnswerUpdateReqDTO requestParam) {
         //todo 也许可以加一个被标为有用之后就不允许修改的功能
+        checkAnswerExist(requestParam.getId());
+        checkAnswerOwner(requestParam.getId());
+
         LambdaUpdateWrapper<AnswerDO> queryWrapper = Wrappers.lambdaUpdate(AnswerDO.class)
                 .eq(AnswerDO::getId, requestParam.getId());
         AnswerDO answerDO = baseMapper.selectOne(queryWrapper);
-        if (answerDO == null) {
-            throw new ServiceException("问题不存在");
-        }
-        if(!String.valueOf(answerDO.getUserId()).equals(UserContext.getUserId())){
-            throw new ServiceException("没有删除权限");
-        }
         BeanUtils.copyProperties(requestParam, answerDO);
-        int result = baseMapper.update(answerDO, queryWrapper);
-        return result > 0;
+        baseMapper.update(answerDO, queryWrapper);
     }
+
+    @Override
+    public IPage<AnswerPageRespDTO> pageAnswer(AnswerPageReqDTP requestParam) {
+        LambdaQueryWrapper<AnswerDO> queryWrapper = Wrappers.lambdaQuery(AnswerDO.class)
+                .eq(AnswerDO::getDelFlag, 0)
+                .eq(AnswerDO::getQuestionId, requestParam.getId());
+        IPage<AnswerDO> page = baseMapper.selectPage(requestParam, queryWrapper);
+
+        List<AnswerPageRespDTO> answerPageRespDTOList = page.getRecords().stream().map(answerDO -> {
+            String username = answerDO.getUsername();
+            String userJson = stringRedisTemplate.opsForValue().get(USER_INFO_KEY + username);
+            UserDO userDO = JSON.parseObject(userJson, UserDO.class);
+            AnswerPageRespDTO answerPageRespDTO = BeanUtil.copyProperties(answerDO, AnswerPageRespDTO.class);
+            answerPageRespDTO.setAvatar(userDO.getAvatar());
+            return answerPageRespDTO;
+        }).collect(Collectors.toList());
+
+        IPage<AnswerPageRespDTO> result = new Page<>();
+        result.setCurrent(page.getCurrent());
+        result.setSize(page.getSize());
+        result.setTotal(page.getTotal());
+        result.setRecords(answerPageRespDTOList);
+
+        return result;
+    }
+
+    @Override
+    public void checkAnswerExist(long id) {
+        AnswerDO answer = baseMapper.selectById(id);
+        if (answer == null || answer.getDelFlag() != 0) {
+            throw new ClientException(ANSWER_NULL);
+        }
+    }
+
+    @Override
+    public void checkAnswerOwner(long id) {
+        AnswerDO answer = baseMapper.selectById(id);
+        String userId = UserContext.getUserId();
+        if (!answer.getUserId().equals(Long.valueOf(userId))) {
+            throw new ClientException(ANSWER_ACCESS_CONTROL_ERROR);
+        }
+    }
+
 }

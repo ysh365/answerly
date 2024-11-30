@@ -14,7 +14,7 @@ public class QuestionDO extends BaseDO {
     /**
      * 分类id
      */
-    private Integer category;
+    private Long categoryId;
 
     /**
      * 标题
@@ -30,6 +30,11 @@ public class QuestionDO extends BaseDO {
      * 发布人id
      */
     private Long userId;
+
+    /**
+     * 发布人用户名
+     */
+    private String username;
 
     /**
      * 浏览量

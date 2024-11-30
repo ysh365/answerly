@@ -1,14 +1,13 @@
 package org.buaa.project.dto.req;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-
+/**
+ * 问题上传请求参数
+ */
 @Data
 public class QuestionUploadReqDTO {
+
     /**
      * 包含的图片
      */
@@ -17,7 +16,7 @@ public class QuestionUploadReqDTO {
     /**
      * 分类id
      */
-    private Integer category;
+    private Long categoryId;
 
     /**
      * 标题

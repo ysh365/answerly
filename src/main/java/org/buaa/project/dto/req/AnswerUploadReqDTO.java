@@ -4,12 +4,6 @@ import lombok.Data;
 
 @Data
 public class AnswerUploadReqDTO {
-    /**
-     * category_id - the ID of the category/theme this answer belongs to
-     */
-    @JsonProperty("category_id")
-    private Long categoryId;
-
 
     /**
      * question_id - the ID of the question this answer responds to

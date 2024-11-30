@@ -2,22 +2,21 @@ package org.buaa.project.dto.req;
 
 import lombok.Data;
 
+/**
+ * 问题修改请求参数
+ */
 @Data
 public class QuestionUpdateReqDTO {
+
     /**
      * 需要修改的问题id
      */
-    private long id;
+    private Long id;
 
     /**
      * 包含的图片
      */
-    private String pictures;
-
-    /**
-     * 分类id
-     */
-    private Integer category;
+    private String images;
 
     /**
      * 标题
