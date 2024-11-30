@@ -29,7 +29,9 @@ public class LoginCheckFilter implements Filter {
 
     private static final List<String> IGNORE_URI = Lists.newArrayList(
             "/api/answerly/v1/user/login",
-            "/api/answerly/v1/user/send-code"
+            "/api/answerly/v1/user/send-code",
+            "/api/answerly/v1/question/page",
+            "/api/answerly/v1/answer/page"
     );
 
     @SneakyThrows
@@ -37,7 +39,7 @@ public class LoginCheckFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestURI = httpServletRequest.getRequestURI();
-        if (!IGNORE_URI.contains(requestURI)) {
+        if (!IGNORE_URI.contains(requestURI) && !requestURI.matches("/api/answerly/v1/question/\\d+")) {
             String method = httpServletRequest.getMethod();
             if (!(Objects.equals(requestURI, "/api/answerly/v1/user") && Objects.equals(method, "POST"))) {
                 if(UserContext.getUsername() == null){
