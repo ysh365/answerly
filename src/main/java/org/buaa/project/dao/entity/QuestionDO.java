@@ -1,4 +1,5 @@
 package org.buaa.project.dao.entity;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.buaa.project.common.database.BaseDO;
@@ -6,6 +7,7 @@ import org.buaa.project.common.database.BaseDO;
 @Data
 @TableName("question")
 public class QuestionDO extends BaseDO {
+
     /**
      * id
      */

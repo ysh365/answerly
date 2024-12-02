@@ -9,6 +9,11 @@ import lombok.Data;
 public class CategoryRespDTO {
 
     /**
+     * id
+     */
+    private Long id;
+
+    /**
      * 主题名称
      */
     private String name;

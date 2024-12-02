@@ -22,6 +22,7 @@ import org.buaa.project.dto.req.UserUpdateReqDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
 import org.buaa.project.service.UserService;
+import org.buaa.project.toolkit.CustomIdGenerator;
 import org.buaa.project.toolkit.RandomGenerator;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -125,12 +126,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(USER_NAME_EXIST);
         }
         try {
-            int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+            UserDO userDO = BeanUtil.toBean(requestParam, UserDO.class);
+            userDO.setId(CustomIdGenerator.getId());
+            int inserted = baseMapper.insert(userDO);
             if (inserted < 1) {
                 throw new ClientException(USER_SAVE_ERROR);
             }
-            UserDO userDO = baseMapper.selectOne(Wrappers.lambdaQuery(UserDO.class)
-                    .eq(UserDO::getUsername, requestParam.getUsername()));
             stringRedisTemplate.opsForValue().set(USER_INFO_KEY + requestParam.getUsername(), JSON.toJSONString(userDO));
         } catch (DuplicateKeyException ex) {
             throw new ClientException(USER_EXIST);
