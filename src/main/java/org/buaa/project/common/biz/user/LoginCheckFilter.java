@@ -28,24 +28,39 @@ import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 public class LoginCheckFilter implements Filter {
 
     private static final List<String> IGNORE_URI = Lists.newArrayList(
-            "/api/answerly/v1/user/login",
-            "/api/answerly/v1/user/send-code",
-            "/api/answerly/v1/question/page",
-            "/api/answerly/v1/answer/page"
+            "/api/answerly/v1/user/login", //登录
+            "/api/answerly/v1/user/send-code", //发送验证码
+            "/api/answerly/v1/question/page", //分页查看问题
+            "/api/answerly/v1/answer/page" //分页查看某题答案
     );
+
+    private boolean requireLogin(String URI, String method) {
+        if (IGNORE_URI.contains(URI)) {
+            return false;
+        }
+        // 注册用户
+        if (URI.equals("/api/answerly/v1/user") && method.equals("POST")) {
+            return false;
+        }
+        // 查看所有主题
+        if (URI.equals("/api/answerly/v1/category") && method.equals("POST")) {
+            return false;
+        }
+        // 查询题目详情
+        if (URI.matches("/api/answerly/v1/question/\\d+")) {
+            return false;
+        }
+        return true;
+    }
 
     @SneakyThrows
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestURI = httpServletRequest.getRequestURI();
-        if (!IGNORE_URI.contains(requestURI) && !requestURI.matches("/api/answerly/v1/question/\\d+")) {
-            String method = httpServletRequest.getMethod();
-            if (!(Objects.equals(requestURI, "/api/answerly/v1/user") && Objects.equals(method, "POST"))) {
-                if(UserContext.getUsername() == null){
-                    returnJson((HttpServletResponse) servletResponse, JSON.toJSONString(Results.failure(new ClientException(USER_TOKEN_NULL))));
-                }
-            }
+        String method = httpServletRequest.getMethod();
+        if (requireLogin(requestURI, method) && UserContext.getUsername() == null) {
+            returnJson((HttpServletResponse) servletResponse, JSON.toJSONString(Results.failure(new ClientException(USER_TOKEN_NULL))));
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
