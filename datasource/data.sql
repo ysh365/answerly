@@ -21,10 +21,12 @@ CREATE TABLE `user` (
                         `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                         PRIMARY KEY (`id`),
                         UNIQUE KEY idx_unique_username (username) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生和义工';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生和义工和管理员';
+
 
 INSERT INTO `user` (`username`, `password`, `mail`, `avatar`, `phone`, `introduction`, `like_count`, `solved_count`, `user_type`, `status`, `create_time`, `update_time`, `del_flag`)
 VALUES ('admin', 'Vx7!nE9z$T4m@P2qW#jZ', 'admin@example.com', NULL, NULL, 'Administrator account', 0, 0, 'admin', 1, NOW(), NOW(), 0);
+
 
 
 DROP TABLE IF EXISTS `category`;
@@ -75,4 +77,3 @@ CREATE TABLE `answer` (
                           `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回复';
-
