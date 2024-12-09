@@ -50,7 +50,6 @@ import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_EXIST;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NAME_EXIST;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_NAME_NULL;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_PASSWORD_ERROR;
-import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_REPEATED_LOGIN;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_SAVE_ERROR;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_UPDATE_ERROR;
@@ -158,7 +157,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
          */
         String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + requestParam.getUsername());
         if (StrUtil.isNotEmpty(hasLogin)) {
-            throw new ClientException(USER_REPEATED_LOGIN);
+            // throw new ClientException(USER_REPEATED_LOGIN);
+            return new UserLoginRespDTO(hasLogin);
         }
         String uuid = UUID.randomUUID().toString();
         stringRedisTemplate.opsForValue().set(USER_LOGIN_KEY + requestParam.getUsername(), uuid, USER_LOGIN_EXPIRE, TimeUnit.DAYS);
