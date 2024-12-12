@@ -58,7 +58,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     @Override
     public void deleteQuestion(Long id) {
         checkQuestionExist(id);
-        checkQuestionOwner(id);
+        if(!UserContext.getUserType().equals("admin")){
+            checkQuestionOwner(id);
+        }
 
         QuestionDO question = baseMapper.selectById(id);
         question.setDelFlag(1);
@@ -68,7 +70,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     @Override
     public void likeQuestion(Long id) {
         checkQuestionExist(id);
-        checkQuestionOwner(id);
 
         QuestionDO question = baseMapper.selectById(id);
         int curLikeCount = question.getLikeCount();

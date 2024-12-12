@@ -66,7 +66,9 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
     @Override
     public void deleteAnswer(long id){
         checkAnswerExist(id);
-        checkAnswerOwner(id);
+        if(!UserContext.getUserType().equals("admin")){
+            checkAnswerOwner(id);
+        }
 
         AnswerDO answerDO = baseMapper.selectById(id);
         answerDO.setDelFlag(1);
