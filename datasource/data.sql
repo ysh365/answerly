@@ -14,29 +14,19 @@ CREATE TABLE `user` (
                         `introduction`  varchar(1024)   DEFAULT NULL COMMENT '个人简介',
                         `like_count`    int(11)         DEFAULT 0 COMMENT '点赞数',
                         `solved_count`  int(11)         DEFAULT 0 COMMENT '解决问题的数量',
-                        `user_type` ENUM('student', 'volunteer') NOT NULL COMMENT '用户类型',
+                        `user_type` ENUM('student', 'volunteer','admin') NOT NULL COMMENT '用户类型',
                         `status` tinyint(4)        DEFAULT 0    COMMENT '状态',
                         `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
                         `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
                         `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                         PRIMARY KEY (`id`),
                         UNIQUE KEY idx_unique_username (username) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生和义工';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生和义工和管理员';
 
 
-DROP TABLE IF EXISTS `sys_user`;
-CREATE TABLE `sys_user` (
-                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-                            `student_id`    varchar(20)  NOT NULL COMMENT '学号',
-                            `username`      varchar(256) NOT NULL COMMENT '用户名',
-                            `password`      varchar(256) NOT NULL COMMENT '密码',
-                            `phone`         varchar(20)  NOT NULL COMMENT '手机号',
-                            `status` tinyint(4)        DEFAULT 0 COMMENT '状态',
-                            `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
-                            `update_time` datetime     DEFAULT NULL COMMENT '修改时间',
-                            `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
-                            PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COMMENT='管理员';
+INSERT INTO `user` (`username`, `password`, `mail`, `avatar`, `phone`, `introduction`, `like_count`, `solved_count`, `user_type`, `status`, `create_time`, `update_time`, `del_flag`)
+VALUES ('admin', 'Vx7!nE9z$T4m@P2qW#jZ', 'admin@example.com', NULL, NULL, 'Administrator account', 0, 0, 'admin', 1, NOW(), NOW(), 0);
+
 
 
 DROP TABLE IF EXISTS `category`;
@@ -87,4 +77,3 @@ CREATE TABLE `answer` (
                           `del_flag`    tinyint(1)   DEFAULT NULL COMMENT '删除标识 0：未删除 1：已删除',
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='回复';
-
