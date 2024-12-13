@@ -1,11 +1,16 @@
 server:
   port: 8000
+  ssl:
+    key-store-password: ybtmq01b
+    key-store-type: JKS
+    key-store: classpath:nurl.top.jks
+
 
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/answerly?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: LGQJu4wLpGA5ciBzNntm
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-test-query: select 1
@@ -13,10 +18,12 @@ spring:
       idle-timeout: 300000
       maximum-pool-size: 5
       minimum-idle: 5
+
   data:
     redis:
       host: 127.0.0.1
       port: 6379
+      password: wwx123
 
   mail:
     protocol: smtps
@@ -34,7 +41,7 @@ spring:
       endpoint: https://oss-cn-beijing.aliyuncs.com
       accessKeyId: ${ALIBABA_ACCESS_KEY_ID}
       accessKeySecret: ${ALIBABA_ACCESS_KEY_SECRET}
-      bucketName: answerly
+      bucketName: oss-symbol
 
   servlet:
     multipart:
