@@ -20,7 +20,7 @@ public interface AnswerService extends IService<AnswerDO> {
      * 点赞回答
      * @param id
      */
-    void likeAnswer(long id) ;
+    void likeAnswer(long id, long entityUserId); ;
 
     /**
      * 删除回答

@@ -44,7 +44,7 @@ public interface QuestionService extends IService<QuestionDO> {
      *
      * @param id
      */
-    void likeQuestion(Long id);
+    void likeQuestion(Long id, Long entityUserId);
 
     /**
      * 标记问题已经解决

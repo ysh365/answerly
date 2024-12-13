@@ -61,8 +61,8 @@ public class AnswerController {
      * @param Id
      */
     @PostMapping("/api/answerly/v1/answer/like")
-    public Result<Void> likeQuestion(@RequestParam("id") Long Id) {
-        answerService.likeAnswer(Id);
+    public Result<Void> likeQuestion(@RequestParam("id") Long Id, @RequestParam("userId") Long entityUserId) {
+        answerService.likeAnswer(Id, entityUserId);
         return Results.success();
     }
 

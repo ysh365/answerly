@@ -51,6 +51,11 @@ public class QuestionRespDTO {
     private Integer likeCount;
 
     /**
+     * 点赞状态
+     */
+    private String likeStatus;
+
+    /**
      * 是否解决 0：未解决 1：已解决
      */
     private int solvedFlag;

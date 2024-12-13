@@ -61,8 +61,8 @@ public class QuestionController {
      * 点赞题目
      */
     @PostMapping("/api/answerly/v1/question/like")
-    public Result<Void> likeQuestion(@RequestParam("id") Long Id) {
-        questionService.likeQuestion(Id);
+    public Result<Void> likeQuestion(@RequestParam("id") Long Id, @RequestParam("userId") Long entityUserId) {
+        questionService.likeQuestion(Id, entityUserId);
         return Results.success();
     }
 

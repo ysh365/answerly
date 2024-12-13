@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
+import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.AnswerDO;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
@@ -19,8 +20,10 @@ import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
 import org.buaa.project.dto.resp.AnswerPageRespDTO;
 import org.buaa.project.service.AnswerService;
+import org.buaa.project.service.LikeService;
 import org.buaa.project.service.QuestionService;
 import org.buaa.project.toolkit.CustomIdGenerator;
+import org.buaa.project.toolkit.SensitiveFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -43,14 +46,16 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final SensitiveFilter sensitiveFilter;
+
+    private final LikeService likeService;
+
     @Override
-    public void likeAnswer(long id){
+    public void likeAnswer(long id, long entityUserId){
         checkAnswerExist(id);
 
-        AnswerDO answerDO = baseMapper.selectById(id);
-        int curLikeCount = answerDO.getLikeCount();
-        answerDO.setLikeCount(curLikeCount + 1);
-        baseMapper.updateById(answerDO);
+        String userId = UserContext.getUserId();
+        likeService.like(userId, EntityTypeEnum.ANSWER, id, String.valueOf(entityUserId));
     }
 
     @Override
@@ -60,6 +65,7 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
         answerDO.setUserId(userId);
         answerDO.setUsername(UserContext.getUsername());
         answerDO.setId(CustomIdGenerator.getId());
+        answerDO = checkSensitiveWords(answerDO);
         baseMapper.insert(answerDO);
     }
 
@@ -95,6 +101,7 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
                 .eq(AnswerDO::getId, requestParam.getId());
         AnswerDO answerDO = baseMapper.selectOne(queryWrapper);
         BeanUtils.copyProperties(requestParam, answerDO);
+        answerDO = checkSensitiveWords(answerDO);
         baseMapper.update(answerDO, queryWrapper);
     }
 
@@ -111,6 +118,8 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
             UserDO userDO = JSON.parseObject(userJson, UserDO.class);
             AnswerPageRespDTO answerPageRespDTO = BeanUtil.copyProperties(answerDO, AnswerPageRespDTO.class);
             answerPageRespDTO.setAvatar(userDO.getAvatar());
+            answerPageRespDTO.setLikeCount(likeService.findEntityLikeCount(EntityTypeEnum.ANSWER, answerDO.getId()));
+            answerPageRespDTO.setLikeStatus(UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.ANSWER, answerDO.getId()));
             return answerPageRespDTO;
         }).collect(Collectors.toList());
 
@@ -138,6 +147,11 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
         if (!answer.getUserId().equals(Long.valueOf(userId))) {
             throw new ClientException(ANSWER_ACCESS_CONTROL_ERROR);
         }
+    }
+
+    public AnswerDO checkSensitiveWords(AnswerDO answer){
+        answer.setContent(sensitiveFilter.filter(answer.getContent()));
+        return answer;
     }
 
 }

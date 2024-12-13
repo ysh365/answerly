@@ -41,6 +41,11 @@ public class AnswerPageRespDTO {
     private int likeCount;
 
     /**
+     * 点赞状态
+     */
+    private String likeStatus;
+
+    /**
      * 是否被采纳 0：未采纳 1：已采纳
      */
     private int useful;

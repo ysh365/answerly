@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
+import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.QuestionPageReqDTO;
@@ -16,8 +17,10 @@ import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionPageRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.service.LikeService;
 import org.buaa.project.service.QuestionService;
 import org.buaa.project.toolkit.CustomIdGenerator;
+import org.buaa.project.toolkit.SensitiveFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +36,14 @@ import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_NULL;
 @RequiredArgsConstructor
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
 
+    private final SensitiveFilter sensitiveFilter;
+
+    private final LikeService likeService;
+
     @Override
     public void uploadQuestion(QuestionUploadReqDTO requestParam) {
         QuestionDO question = BeanUtil.toBean(requestParam, QuestionDO.class);
+        question = checkSensitiveWords(question);
         question.setUserId(Long.valueOf(UserContext.getUserId()));
         question.setUsername(UserContext.getUsername());
         question.setId(CustomIdGenerator.getId());
@@ -52,6 +60,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
                 .eq(QuestionDO::getId, requestParam.getId());
         QuestionDO questionDO = baseMapper.selectOne(queryWrapper);
         BeanUtils.copyProperties(requestParam, questionDO);
+        questionDO = checkSensitiveWords(questionDO);
         baseMapper.update(questionDO, queryWrapper);
     }
 
@@ -68,13 +77,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     }
 
     @Override
-    public void likeQuestion(Long id) {
+    public void likeQuestion(Long id, Long entityUserId) {
         checkQuestionExist(id);
 
-        QuestionDO question = baseMapper.selectById(id);
-        int curLikeCount = question.getLikeCount();
-        question.setLikeCount(curLikeCount + 1);
-        baseMapper.updateById(question);
+        String userId = UserContext.getUserId();
+        likeService.like(userId, EntityTypeEnum.QUESTION, id, String.valueOf(entityUserId));
     }
 
     @Override
@@ -92,6 +99,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         QuestionDO question = baseMapper.selectById(id);
         QuestionRespDTO result = new QuestionRespDTO();
         BeanUtils.copyProperties(question, result);
+        int likeCount = likeService.findEntityLikeCount(EntityTypeEnum.QUESTION, id);
+        String likeStatus = UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.QUESTION, id);
+        result.setLikeCount(likeCount);
+        result.setLikeStatus(likeStatus);
         return result;
     }
 
@@ -137,6 +148,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         if (!question.getUserId().equals(Long.valueOf(userId))) {
             throw new ClientException(QUESTION_ACCESS_CONTROL_ERROR);
         }
+    }
+
+    public QuestionDO checkSensitiveWords(QuestionDO question){
+        //todo 错误过滤？应该发现敏感词后需要通知管理员+审核
+        question.setTitle(sensitiveFilter.filter(question.getTitle()));
+        question.setContent(sensitiveFilter.filter(question.getContent()));
+        return question;
     }
 
 }

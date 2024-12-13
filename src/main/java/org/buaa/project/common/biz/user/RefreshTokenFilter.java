@@ -14,6 +14,7 @@ import org.buaa.project.dao.entity.UserDO;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.buaa.project.common.consts.RedisCacheConstants.USER_INFO_KEY;
@@ -39,7 +40,7 @@ public class RefreshTokenFilter implements Filter {
             return;
         }
         String hasLogin = stringRedisTemplate.opsForValue().get(USER_LOGIN_KEY + username);
-        if (StrUtil.isBlank(hasLogin)) {
+        if (StrUtil.isBlank(hasLogin) || !Objects.equals(hasLogin, token)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
