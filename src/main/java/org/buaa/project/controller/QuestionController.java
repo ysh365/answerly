@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.QuestionMinePageReqDTO;
 import org.buaa.project.dto.req.QuestionPageReqDTO;
 import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
@@ -99,6 +100,14 @@ public class QuestionController {
         return Results.success(questionService.findQuestionById(id));
     }
 
-
+    /**
+     * 分页查询我的题目
+     * @param requestParam
+     * @return
+     */
+    @GetMapping("/api/answerly/v1/question/my")
+    public Result<IPage<QuestionPageRespDTO>> findMyQuestion(QuestionMinePageReqDTO requestParam) {
+        return Results.success(questionService.pageMyQuestion(requestParam));
+    }
 }
 

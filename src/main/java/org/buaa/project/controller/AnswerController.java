@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.convention.result.Result;
 import org.buaa.project.common.convention.result.Results;
+import org.buaa.project.dto.req.AnswerMinePageReqDTO;
 import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
@@ -81,6 +82,11 @@ public class AnswerController {
     @GetMapping("/api/answerly/v1/answer/page")
     public Result<IPage<AnswerPageRespDTO>> pageAnswer(AnswerPageReqDTP requestParam) {
         return Results.success(answerService.pageAnswer(requestParam));
+    }
+
+    @GetMapping("/api/answerly/v1/answer/my")
+    public  Result<IPage<AnswerPageRespDTO>> pageMyAnswer(AnswerMinePageReqDTO requestParam) {
+        return Results.success(answerService.pageMyAnswer(requestParam));
     }
 
 }

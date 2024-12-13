@@ -3,6 +3,7 @@ package org.buaa.project.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.AnswerDO;
+import org.buaa.project.dto.req.AnswerMinePageReqDTO;
 import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
@@ -58,5 +59,13 @@ public interface AnswerService extends IService<AnswerDO> {
      * @return
      */
     IPage<AnswerPageRespDTO> pageAnswer(AnswerPageReqDTP requestParam);
+
+    /**
+     * 分页查询我的回答
+     * @param requestParam
+     * @return
+     */
+    IPage<AnswerPageRespDTO> pageMyAnswer(AnswerMinePageReqDTO requestParam);
+
 
 }

@@ -3,6 +3,7 @@ package org.buaa.project.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.buaa.project.dao.entity.QuestionDO;
+import org.buaa.project.dto.req.QuestionMinePageReqDTO;
 import org.buaa.project.dto.req.QuestionPageReqDTO;
 import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
@@ -90,5 +91,12 @@ public interface QuestionService extends IService<QuestionDO> {
      * @param id
      */
     void checkQuestionOwner(Long id);
+
+    /**
+     * 查看当前用户发布的所有问题
+     * @param requestParam
+     * @return
+     */
+    IPage<QuestionPageRespDTO> pageMyQuestion(QuestionMinePageReqDTO requestParam);
 
 }

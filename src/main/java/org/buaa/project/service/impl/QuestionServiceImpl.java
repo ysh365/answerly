@@ -12,6 +12,7 @@ import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
+import org.buaa.project.dto.req.QuestionMinePageReqDTO;
 import org.buaa.project.dto.req.QuestionPageReqDTO;
 import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
@@ -112,6 +113,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
                     .eq(QuestionDO::getDelFlag, 0)
                     .eq(requestParam.getSolvedFlag() != 2 , QuestionDO::getSolvedFlag, requestParam.getSolvedFlag())
                     .eq(QuestionDO::getCategoryId, requestParam.getCategoryId());
+        IPage<QuestionDO> page = baseMapper.selectPage(requestParam, queryWrapper);
+        return page.convert(each -> BeanUtil.toBean(each, QuestionPageRespDTO.class));
+    }
+
+    @Override
+    public IPage<QuestionPageRespDTO> pageMyQuestion(QuestionMinePageReqDTO requestParam) {
+        LambdaQueryWrapper<QuestionDO> queryWrapper = Wrappers.lambdaQuery(QuestionDO.class)
+                .eq(QuestionDO::getDelFlag, 0)
+                .eq(QuestionDO::getUserId, Integer.valueOf(UserContext.getUserId()));
         IPage<QuestionDO> page = baseMapper.selectPage(requestParam, queryWrapper);
         return page.convert(each -> BeanUtil.toBean(each, QuestionPageRespDTO.class));
     }

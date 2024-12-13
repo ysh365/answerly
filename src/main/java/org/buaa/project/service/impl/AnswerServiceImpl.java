@@ -15,6 +15,7 @@ import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.AnswerDO;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
+import org.buaa.project.dto.req.AnswerMinePageReqDTO;
 import org.buaa.project.dto.req.AnswerPageReqDTP;
 import org.buaa.project.dto.req.AnswerUpdateReqDTO;
 import org.buaa.project.dto.req.AnswerUploadReqDTO;
@@ -104,7 +105,32 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
         answerDO = checkSensitiveWords(answerDO);
         baseMapper.update(answerDO, queryWrapper);
     }
+    @Override
+    public IPage<AnswerPageRespDTO> pageMyAnswer(AnswerMinePageReqDTO requestParam){
+        LambdaQueryWrapper<AnswerDO> queryWrapper = Wrappers.lambdaQuery(AnswerDO.class)
+                .eq(AnswerDO::getDelFlag, 0)
+                .eq(AnswerDO::getUserId, Integer.valueOf(UserContext.getUserId()));
+        IPage<AnswerDO> page = baseMapper.selectPage(requestParam, queryWrapper);
 
+        List<AnswerPageRespDTO> answerPageRespDTOList = page.getRecords().stream().map(answerDO -> {
+            String username = answerDO.getUsername();
+            String userJson = stringRedisTemplate.opsForValue().get(USER_INFO_KEY + username);
+            UserDO userDO = JSON.parseObject(userJson, UserDO.class);
+            AnswerPageRespDTO answerPageRespDTO = BeanUtil.copyProperties(answerDO, AnswerPageRespDTO.class);
+            answerPageRespDTO.setAvatar(userDO.getAvatar());
+            answerPageRespDTO.setLikeCount(likeService.findEntityLikeCount(EntityTypeEnum.ANSWER, answerDO.getId()));
+            answerPageRespDTO.setLikeStatus(UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.ANSWER, answerDO.getId()));
+            return answerPageRespDTO;
+        }).collect(Collectors.toList());
+
+        IPage<AnswerPageRespDTO> result = new Page<>();
+        result.setCurrent(page.getCurrent());
+        result.setSize(page.getSize());
+        result.setTotal(page.getTotal());
+        result.setRecords(answerPageRespDTOList);
+
+        return result;
+    }
     @Override
     public IPage<AnswerPageRespDTO> pageAnswer(AnswerPageReqDTP requestParam) {
         LambdaQueryWrapper<AnswerDO> queryWrapper = Wrappers.lambdaQuery(AnswerDO.class)
