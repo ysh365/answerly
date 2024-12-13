@@ -17,7 +17,6 @@ import org.buaa.project.common.convention.result.Results;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Objects;
 
 import static org.buaa.project.common.enums.UserErrorCodeEnum.USER_TOKEN_NULL;
 
@@ -69,7 +68,7 @@ public class LoginCheckFilter implements Filter {
     private void returnJson(HttpServletResponse response, String json) throws Exception {
         PrintWriter writer = null;
         response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html; charset=utf-8");
+        response.setContentType("application/json; charset=utf-8");
         try {
             writer = response.getWriter();
             writer.print(json);
