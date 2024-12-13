@@ -21,6 +21,7 @@ import org.buaa.project.dto.req.UserRegisterReqDTO;
 import org.buaa.project.dto.req.UserUpdateReqDTO;
 import org.buaa.project.dto.resp.UserLoginRespDTO;
 import org.buaa.project.dto.resp.UserRespDTO;
+import org.buaa.project.service.LikeService;
 import org.buaa.project.service.UserService;
 import org.buaa.project.toolkit.CustomIdGenerator;
 import org.buaa.project.toolkit.RandomGenerator;
@@ -67,6 +68,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final LikeService likeService;
+
     @Value("${spring.mail.username}")
     private String from;
 
@@ -80,6 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
         UserRespDTO result = new UserRespDTO();
         BeanUtils.copyProperties(userDO, result);
+        result.setLikeCount(likeService.findUserLikeCount(String.valueOf(userDO.getId())));
         return result;
     }
 

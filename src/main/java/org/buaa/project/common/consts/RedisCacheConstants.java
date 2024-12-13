@@ -35,4 +35,9 @@ public class RedisCacheConstants {
      */
     public static final String USER_INFO_KEY = "user:info:";
 
+    /**
+     * 点赞缓存标识
+     */
+    public static final String PREFIX_ENTITY_LIKE = "like:%s:%s";
+
 }

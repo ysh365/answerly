@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
+import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.QuestionPageReqDTO;
@@ -16,6 +17,7 @@ import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionPageRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.service.LikeService;
 import org.buaa.project.service.QuestionService;
 import org.buaa.project.toolkit.CustomIdGenerator;
 import org.buaa.project.toolkit.SensitiveFilter;
@@ -35,6 +37,8 @@ import static org.buaa.project.common.enums.QAErrorCodeEnum.QUESTION_NULL;
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO> implements QuestionService {
 
     private final SensitiveFilter sensitiveFilter;
+
+    private final LikeService likeService;
 
     @Override
     public void uploadQuestion(QuestionUploadReqDTO requestParam) {
@@ -73,13 +77,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     }
 
     @Override
-    public void likeQuestion(Long id) {
+    public void likeQuestion(Long id, Long entityUserId) {
         checkQuestionExist(id);
 
-        QuestionDO question = baseMapper.selectById(id);
-        int curLikeCount = question.getLikeCount();
-        question.setLikeCount(curLikeCount + 1);
-        baseMapper.updateById(question);
+        String userId = UserContext.getUserId();
+        likeService.like(userId, EntityTypeEnum.QUESTION, id, String.valueOf(entityUserId));
     }
 
     @Override
@@ -97,6 +99,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         QuestionDO question = baseMapper.selectById(id);
         QuestionRespDTO result = new QuestionRespDTO();
         BeanUtils.copyProperties(question, result);
+        int likeCount = likeService.findEntityLikeCount(EntityTypeEnum.QUESTION, id);
+        String likeStatus = UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.QUESTION, id);
+        result.setLikeCount(likeCount);
+        result.setLikeStatus(likeStatus);
         return result;
     }
 
