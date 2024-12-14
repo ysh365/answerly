@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.enums.EntityTypeEnum;
+import org.buaa.project.common.enums.MessageTypeEnum;
 import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.mapper.QuestionMapper;
 import org.buaa.project.dto.req.QuestionMinePageReqDTO;
@@ -18,6 +19,8 @@ import org.buaa.project.dto.req.QuestionUpdateReqDTO;
 import org.buaa.project.dto.req.QuestionUploadReqDTO;
 import org.buaa.project.dto.resp.QuestionPageRespDTO;
 import org.buaa.project.dto.resp.QuestionRespDTO;
+import org.buaa.project.mq.MqEvent;
+import org.buaa.project.mq.MqProducer;
 import org.buaa.project.service.LikeService;
 import org.buaa.project.service.QuestionService;
 import org.buaa.project.toolkit.CustomIdGenerator;
@@ -40,6 +43,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
     private final SensitiveFilter sensitiveFilter;
 
     private final LikeService likeService;
+
+    private final MqProducer producer;
 
     @Override
     public void uploadQuestion(QuestionUploadReqDTO requestParam) {
@@ -82,7 +87,17 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, QuestionDO>
         checkQuestionExist(id);
 
         String userId = UserContext.getUserId();
-        likeService.like(userId, EntityTypeEnum.QUESTION, id, String.valueOf(entityUserId));
+        int isLike = likeService.like(userId, EntityTypeEnum.QUESTION, id, String.valueOf(entityUserId));
+        if (isLike == 1) {
+            MqEvent event = MqEvent.builder()
+                    .messageType(MessageTypeEnum.Like)
+                    .entityType(EntityTypeEnum.QUESTION)
+                    .userId(Long.valueOf(userId))
+                    .entityId(id)
+                    .entityUserId(entityUserId)
+                    .build();
+            producer.send(event);
+        }
     }
 
     @Override

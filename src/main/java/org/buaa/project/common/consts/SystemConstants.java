@@ -7,5 +7,9 @@ public class SystemConstants {
      */
     public static final String IMAGE_UPLOAD_DIR = "E:\\大四\\answerly\\image";
 
+    /**
+     * 系统消息ID
+     */
+    public static final Long SYSTEM_MESSAGE_ID = 1L;
 
 }

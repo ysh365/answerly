@@ -13,7 +13,7 @@ public interface LikeService {
      * @param entityType
      * @param entityId
      */
-    void like(String userId, EntityTypeEnum entityType, long entityId, String entityUserId);
+    int like(String userId, EntityTypeEnum entityType, long entityId, String entityUserId);
 
     /**
      * 查询实体点赞数量

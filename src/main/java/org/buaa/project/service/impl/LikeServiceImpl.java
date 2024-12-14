@@ -18,7 +18,7 @@ public class LikeServiceImpl implements LikeService {
     private final StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public void like(String userId, EntityTypeEnum entityType, long entityId, String entityUserId) {
+    public int like(String userId, EntityTypeEnum entityType, long entityId, String entityUserId) {
         String entityLikeKey = String.format(PREFIX_ENTITY_LIKE, entityType, entityId);
         String userLikeKey = String.format(PREFIX_ENTITY_LIKE, EntityTypeEnum.USER, entityUserId);
         boolean isMember = Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(entityLikeKey, userId));
@@ -29,6 +29,7 @@ public class LikeServiceImpl implements LikeService {
             stringRedisTemplate.opsForSet().add(entityLikeKey, userId);
             stringRedisTemplate.opsForValue().increment(userLikeKey);
         }
+        return isMember ? 0 : 1;
     }
 
     @Override
