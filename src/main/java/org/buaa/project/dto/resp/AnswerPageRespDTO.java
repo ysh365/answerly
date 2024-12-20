@@ -55,4 +55,13 @@ public class AnswerPageRespDTO {
      */
     private Date createTime;
 
+    /**
+     * 问题id
+     */
+    private Long questionId;
+
+    /**
+     * 问题标题
+     */
+    private String title;
 }

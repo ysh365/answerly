@@ -13,6 +13,7 @@ import org.buaa.project.common.biz.user.UserContext;
 import org.buaa.project.common.convention.exception.ClientException;
 import org.buaa.project.common.enums.EntityTypeEnum;
 import org.buaa.project.dao.entity.AnswerDO;
+import org.buaa.project.dao.entity.QuestionDO;
 import org.buaa.project.dao.entity.UserDO;
 import org.buaa.project.dao.mapper.AnswerMapper;
 import org.buaa.project.dto.req.AnswerMinePageReqDTO;
@@ -117,6 +118,8 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
             String userJson = stringRedisTemplate.opsForValue().get(USER_INFO_KEY + username);
             UserDO userDO = JSON.parseObject(userJson, UserDO.class);
             AnswerPageRespDTO answerPageRespDTO = BeanUtil.copyProperties(answerDO, AnswerPageRespDTO.class);
+            QuestionDO questionDO = questionService.getById(answerDO.getQuestionId());
+            answerPageRespDTO.setTitle(questionDO.getTitle());
             answerPageRespDTO.setAvatar(userDO.getAvatar());
             answerPageRespDTO.setLikeCount(likeService.findEntityLikeCount(EntityTypeEnum.ANSWER, answerDO.getId()));
             answerPageRespDTO.setLikeStatus(UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.ANSWER, answerDO.getId()));
@@ -143,6 +146,8 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, AnswerDO> imple
             String userJson = stringRedisTemplate.opsForValue().get(USER_INFO_KEY + username);
             UserDO userDO = JSON.parseObject(userJson, UserDO.class);
             AnswerPageRespDTO answerPageRespDTO = BeanUtil.copyProperties(answerDO, AnswerPageRespDTO.class);
+            QuestionDO questionDO = questionService.getById(answerDO.getQuestionId());
+            answerPageRespDTO.setTitle(questionDO.getTitle());
             answerPageRespDTO.setAvatar(userDO.getAvatar());
             answerPageRespDTO.setLikeCount(likeService.findEntityLikeCount(EntityTypeEnum.ANSWER, answerDO.getId()));
             answerPageRespDTO.setLikeStatus(UserContext.getUsername() == null ? "未登录" : likeService.findEntityLikeStatus(UserContext.getUserId(), EntityTypeEnum.ANSWER, answerDO.getId()));
