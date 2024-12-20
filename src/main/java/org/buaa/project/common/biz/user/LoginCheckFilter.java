@@ -42,7 +42,7 @@ public class LoginCheckFilter implements Filter {
             return false;
         }
         // 查看所有主题
-        if (URI.equals("/api/answerly/v1/category") && method.equals("POST")) {
+        if (URI.equals("/api/answerly/v1/category") && method.equals("GET")) {
             return false;
         }
         // 查询题目详情
